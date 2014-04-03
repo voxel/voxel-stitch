@@ -1,0 +1,6 @@
+# voxel-stitcher
+
+## License
+
+MIT
+
