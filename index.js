@@ -3,13 +3,13 @@
 var createArtpacks = require('artpacks');
 
 module.exports = function(game, opts) {
-  return new StitcherPlugin(game, opts);
+  return new StitchPlugin(game, opts);
 };
 module.exports.pluginInfo = {
   loadAfter: ['voxel-registry']
 };
 
-function StitcherPlugin(game, opts) {
+function StitchPlugin(game, opts) {
   this.registry = game.plugins.get('voxel-registry');
   if (!this.registry) throw new Error('voxel-stitcher requires voxel-registry plugin');
 
@@ -21,7 +21,7 @@ function StitcherPlugin(game, opts) {
   this.enable();
 }
 
-StitcherPlugin.prototype.stitch = function() {
+StitchPlugin.prototype.stitch = function() {
   var textures = this.registry.getBlockPropsAll('texture');
 
   for (var i = 0; i < textures.length; i += 1) {
@@ -42,10 +42,10 @@ StitcherPlugin.prototype.stitch = function() {
   }
 }
 
-StitcherPlugin.prototype.enable = function() {
+StitchPlugin.prototype.enable = function() {
 };
 
-StitcherPlugin.prototype.disable = function() {
+StitchPlugin.prototype.disable = function() {
 };
 
 

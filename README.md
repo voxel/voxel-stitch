@@ -1,4 +1,4 @@
-# voxel-stitcher
+# voxel-stitch
 
 ## License
 
