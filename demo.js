@@ -21,7 +21,7 @@ var fakeRegistry = {
 };
 
 var plugin = createPlugin(null, {registry: fakeRegistry});
-plugin.once('added', function() {
+plugin.on('added', function() {
   console.log('ATLAS=',plugin.atlas);
   show(plugin.atlas);
 });
@@ -38,10 +38,14 @@ function show(atlas) {
 
   shell.on("gl-init", function() {
     var gl = shell.gl
-    
-    var texture = createTexture(gl, lena)
-    texture.minFilter = gl.LINEAR
-    texture.magFilter = gl.LINEAR
+
+    // added
+    var pad = 1
+    var texture = createTileMap(gl, atlas, pad)
+    //var texture = createTexture(gl, lena)
+    texture.minFilter = gl.NEAREST
+    texture.magFilter = gl.NEAREST
+    // end
     
     var shader = createShader(gl, "\
       attribute vec2 position;\
