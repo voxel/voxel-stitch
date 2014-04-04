@@ -1,7 +1,8 @@
 'use strict';
 
-var test = require('tape');
 var createPlugin = require('./');
+var test = require('tape');
+var savePixels = require('save-pixels');
 
 var fakeRegistry = {
   getBlockPropsAll: 
