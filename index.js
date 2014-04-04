@@ -10,7 +10,7 @@ module.exports.pluginInfo = {
 };
 
 function StitchPlugin(game, opts) {
-  this.registry = game.plugins.get('voxel-registry');
+  this.registry = opts.registry || game.plugins.get('voxel-registry');
   if (!this.registry) throw new Error('voxel-stitcher requires voxel-registry plugin');
 
   opts = opts || {};
