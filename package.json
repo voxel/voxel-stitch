@@ -12,7 +12,8 @@
   "dependencies": {
     "artpacks": "git://github.com/deathcap/artpacks.git#88e30b6c526100bd3aab1d1fb3e6c22043666b75",
     "ndarray": "^1.0.11",
-    "inherits": "^2.0.1"
+    "inherits": "^2.0.1",
+    "ndarray-fill": "^0.1.0"
   },
   "scripts": {
     "start": "beefy demo.js 9977"
@@ -21,6 +22,11 @@
   "license": "MIT",
   "devDependencies": {
     "tape": "^2.12.2",
-    "save-pixels": "^0.3.0"
+    "save-pixels": "^0.3.0",
+    "gl-tile-map": "^0.3.0",
+    "gl-now": "^1.0.1",
+    "gl-shader": "^3.0.0",
+    "gl-texture2d": "^1.0.1",
+    "tile-mip-map": "^0.2.1"
   }
 }
