@@ -40,7 +40,7 @@ function show(atlas) {
     var gl = shell.gl
 
     // added
-    var pad = 1
+    var pad = 2
     var texture = createTileMap(gl, atlas, pad)
     //var texture = createTexture(gl, lena)
     texture.minFilter = gl.NEAREST
