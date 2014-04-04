@@ -10,6 +10,7 @@
     "voxel"
   ],
   "dependencies": {
+    "artpacks": "git://github.com/deathcap/artpacks.git#88e30b6c526100bd3aab1d1fb3e6c22043666b75"
   },
   "peerDependencies": {
   },

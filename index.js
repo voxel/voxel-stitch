@@ -1,5 +1,7 @@
 'use strict';
 
+var createArtpacks = require('artpacks');
+
 module.exports = function(game, opts) {
   return new StitcherPlugin(game, opts);
 };
@@ -11,6 +13,11 @@ function StitcherPlugin(game, opts) {
   this.registry = game.plugins.get('voxel-registry');
   if (!this.registry) throw new Error('voxel-stitcher requires voxel-registry plugin');
 
+  opts = opts || {};
+  opts.artpacks = opts.artpacks || ['https://dl.dropboxusercontent.com/u/258156216/artpacks/ProgrammerArt-2.2-dev-ResourcePack-20140308.zip'];
+
+  this.artpacks = createArtpacks(opts.artpacks);
+
   this.enable();
 }
 
@@ -18,13 +25,19 @@ StitcherPlugin.prototype.stitch = function() {
   var textures = this.registry.getBlockPropsAll('texture');
 
   for (var i = 0; i < textures.length; i += 1) {
-    var texture = textures[i];
+    var textureName = textures[i];
 
-    if (texture === undefined) continue;
-    if (Array.isArray(texture)) {
-      // TODO: array textures, maybe use toarray and remove special cases (including undefined)
+    if (textureName === undefined) continue;
+    if (Array.isArray(textureName)) {
+      throw new Error('TODO: array textures, maybe use toarray and remove special cases (including undefined)');
     }
-    // TODO: get texture from artpacks
+
+    this.artpacks.getTextureNdarray(textureName, function(pixels) {
+      console.log(pixels);
+    }, function(err) {
+      console.log(err);
+    });
+
     // TODO: add to atlas
   }
 }
