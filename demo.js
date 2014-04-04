@@ -2,7 +2,6 @@
 
 var test = require('tape');
 var createPlugin = require('./');
-var fs = require('fs');
 
 var fakeRegistry = {
   getBlockPropsAll: 
@@ -18,6 +17,6 @@ var fakeRegistry = {
     }
 };
 
-var plugin = createPlugin(null, {registry: fakeRegistry, artpacks: fs.readFileSync('../voxpopuli/ProgrammerArt-ResourcePack.zip')});
-plugin.stitch(); // fails on node.js because artpacks requires Image, browser-only....
+var plugin = createPlugin(null, {registry: fakeRegistry});
+plugin.stitch();
 

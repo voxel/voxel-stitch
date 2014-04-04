@@ -12,6 +12,9 @@
   "dependencies": {
     "artpacks": "git://github.com/deathcap/artpacks.git#88e30b6c526100bd3aab1d1fb3e6c22043666b75"
   },
+  "scripts": {
+    "start": "beefy demo.js 9977"
+  },
   "peerDependencies": {},
   "license": "MIT",
   "devDependencies": {
