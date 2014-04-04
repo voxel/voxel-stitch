@@ -2,6 +2,8 @@
 
 var createArtpacks = require('artpacks');
 var ndarray = require('ndarray');
+var inherits = require('inherits');
+var EventEmitter = require('events').EventEmitter;
 
 module.exports = function(game, opts) {
   return new StitchPlugin(game, opts);
@@ -30,9 +32,12 @@ function StitchPlugin(game, opts) {
   // [rows, columns, tile height, tile width, channels]
   this.atlas = ndarray(new Uint8Array(this.atlasSize * this.atlasSize * 4), [this.tileCount, this.tileCount, this.tileSize, this.tileSize, 4]); // RGBA
   this.nextX = this.nextY = 0;
+  this.pending = 0;
 
   this.enable();
 }
+
+inherits(StitchPlugin, EventEmitter);
 
 StitchPlugin.prototype.stitch = function() {
   var textures = this.registry.getBlockPropsAll('texture');
@@ -73,17 +78,7 @@ StitchPlugin.prototype.stitch = function() {
         }
       }
 
-
-      // try to show for testing TODO: fix ordering
-      var tmp = ndarray(self.atlas.data, [self.atlasSize, self.atlasSize, 4]);
-      tmp.transpose(0,1);
-      console.log(tmp);
-      var src = require('save-pixels')(tmp, 'canvas').toDataURL();
-      var img = new Image();
-      img.src = src;
-      img.border = '1';
-      document.body.appendChild(img);
-
+      self.emit('added');
     }, function(err) {
       console.log(err);
     });

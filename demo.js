@@ -19,5 +19,9 @@ var fakeRegistry = {
 };
 
 var plugin = createPlugin(null, {registry: fakeRegistry});
+plugin.on('added', function() {
+  console.log('ATLAS=',plugin.atlas);
+});
+
 plugin.stitch();
 
