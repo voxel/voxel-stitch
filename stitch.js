@@ -39,6 +39,13 @@ function StitchPlugin(game, opts) {
   this.countLoading = 0;
   this.countLoaded = 0;
 
+  this.textureArrayType = opts.textureArrayType || Uint8Array; // TODO: switch to 16-bit
+  this.countTextureID = opts.countTextureID || (2 << 7); // TODO: switch to 16-bit
+  this.countVoxelID = opts.countVoxelID || (2 << 14); // ao-mesher uses 16-bit, but top 1 bit is opaque/transparent flag TODO: flat 16-bit
+
+  // 2-dimensional array of [voxelID, side] -> textureID
+  this.voxelSideTextureIDs = ndarray(new this.textureArrayType(this.countVoxelID * 6), [this.countVoxelID, 6]);
+
   this.enable();
 }
 
@@ -51,7 +58,13 @@ StitchPlugin.prototype.stitch = function() {
 
   for (var i = 0; i < textures.length; i += 1) {
     textureNames = textureNames.concat(toarray(textures[i]));
+
+    // TODO: set to each face based on expandName()
+    for (var k = 0; k < 6; k += 1) {
+      this.voxelSideTextureIDs.set(i, k, i);
+    }
   }
+  console.log(this.voxelSideTextureIDs);
 
   this.countLoading = textureNames.length;
 
