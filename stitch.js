@@ -51,24 +51,23 @@ function StitchPlugin(game, opts) {
 
 inherits(StitchPlugin, EventEmitter);
 
-// expand a name into a 6-element array for each side
-// based on shama/voxel-texture _expandName
+// expand a convenient shorthand name into a 6-element array for each side
+// based on shama/voxel-texture _expandName TODO: split into separate module?
 var expandName = function(name, array) {
-  if (name.top) {
+  if (!name || name.length === 0) {
+    // empty
+    array[0] = array[1] = array[2] = array[3] = array[4] = array[5] = undefined;
+  } else if (name.top) {
+    // explicit names
     array[0] = name.back;
     array[1] = name.front;
     array[2] = name.top;
     array[3] = name.bottom;
     array[4] = name.left;
     array[5] = name.right;
-    return;
-  }
-
-  // undefined -> [], scalar -> [scalar]
-  name = toarray(name);
-  if (name.length === 0) {
-    // empty
-    array[0] = array[1] = array[2] = array[3] = array[4] = array[5] = undefined;
+  } else if (!Array.isArray(name)) {
+     // scalar is all
+    array[0] = array[1] = array[2] = array[3] = array[4] = array[5] = name;
   } else if (name.length === 1) {
     // 0 is all
     array[0] = array[1] = array[2] = array[3] = array[4] = array[5] = name[0];
@@ -87,7 +86,14 @@ var expandName = function(name, array) {
     array[2] = name[0];
     array[3] = name[1];
     array[4] = array[5] = name[3];
-  } else {
+  } else if (name.length === 5) {
+    // 0 is top, 1 is bottom, 2 is front, 3 is back, 4 is left/right
+    array[0] = name[3];
+    array[1] = name[2];
+    array[2] = name[0];
+    array[3] = name[1];
+    array[4] = array[5] = name[4];
+  } else if (name.length === 6) {
     // 0 is back, 1 is front, 2 is top, 3 is bottom, 4 is left, 5 is right
     array[0] = name[0];
     array[1] = name[1];
@@ -95,6 +101,8 @@ var expandName = function(name, array) {
     array[3] = name[3];
     array[4] = name[4];
     array[5] = name[5];
+  } else {
+    throw new Error('expandName('+name+'): invalid side count array length '+name.length);
   }
 };
 
