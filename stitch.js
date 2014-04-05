@@ -73,13 +73,13 @@ var expandName = function(name, array) {
     array[0] = array[1] = array[2] = array[3] = array[4] = array[5] = name[0];
   } else if (name.length === 2) {
     // 0 is top/bottom, 1 is sides
-    array[0] = array[1] = array[4] = array[5] = name[0];
-    array[2] = array[3] = name[1];
+    array[0] = array[1] = array[4] = array[5] = name[1];
+    array[2] = array[3] = name[0];
   } else if (name.length === 3) {
     // 0 is top, 1 is bottom, 2 is sides
-    array[0] = array[1] = array[4] = array[5] = name[0];
-    array[2] = name[1];
-    array[3] = name[2];
+    array[0] = array[1] = array[4] = array[5] = name[2];
+    array[2] = name[0];
+    array[3] = name[1];
   } else if (name.length === 4) {
     // 0 is top, 1 is bottom, 2 is front/back, 3 is left/right
     array[0] = array[1] = name[2];
