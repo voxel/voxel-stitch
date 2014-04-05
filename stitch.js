@@ -53,7 +53,6 @@ inherits(StitchPlugin, EventEmitter);
 
 // expand a convenient shorthand name into a 6-element array for each side
 // based on shama/voxel-texture _expandName TODO: split into separate module?
-// TODO: the side ordering is different for ao-mesher! need to fix
 var expandName = function(name, array) {
   if (!name || name.length === 0) {
     // empty
@@ -105,6 +104,15 @@ var expandName = function(name, array) {
   } else {
     throw new Error('expandName('+name+'): invalid side count array length '+name.length);
   }
+
+  // convert voxel-texture[-shader] side order to ao-mesher side order
+  //  0       1    2       3     4        5
+  // back   front top   bottom  left    right   voxel-texture (input)
+  // right  top   front left    bottom  back    ao-mesher (output)
+  var tmp;
+  tmp = array[0]; array[0] = array[5]; array[5] = tmp;
+  tmp = array[1]; array[1] = array[2]; array[2] = tmp;
+  tmp = array[3]; array[3] = array[4]; array[4] = tmp;
 };
 
 var nameSideArray = new Array(6);
