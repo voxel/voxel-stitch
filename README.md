@@ -23,7 +23,7 @@ a more flexible arbitrary-rectangle packing approach.
 Load using [voxel-plugins](https://github.com/deathcap/voxel-plugins), options:
 
 * `artpacks`: Array of resource pack URL(s) to load for textures, defaults to [ProgrammerArt](https://github.com/deathcap/ProgrammerArt).
-* `atlasSize`: Texture atlas width and height, in pixels. Note note all graphics cards support
+* `atlasSize`: Texture atlas width and height, in pixels. Note not all graphics cards support
 all texture dimensions, but [WebGL stats](http://webglstats.com/) shows `MAX_TEXTURE_SIZE` of 2048
 or smaller is supported by 100% of WebGL users.
 
