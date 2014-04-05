@@ -5,6 +5,7 @@ var ndarray = require('ndarray');
 var inherits = require('inherits');
 var EventEmitter = require('events').EventEmitter;
 var fill = require('ndarray-fill');
+var toarray = require('toarray');
 
 module.exports = function(game, opts) {
   return new StitchPlugin(game, opts);
@@ -49,52 +50,59 @@ StitchPlugin.prototype.stitch = function() {
   var textures = this.registry.getBlockPropsAll('texture');
 
   for (var i = 0; i < textures.length; i += 1) {
-    var textureName = textures[i];
-
-    if (textureName === undefined) continue;
-    if (Array.isArray(textureName)) {
-      throw new Error('TODO: array textures, maybe use toarray and remove special cases (including undefined)');
-    }
+    var textureNames = toarray(textures[i]);
 
     var self = this;
 
-    this.artpacks.getTextureNdarray(textureName, function(pixels) {
-      /* debug
-      var src = require('save-pixels')(pixels, 'canvas').toDataURL();
-      var img = new Image();
-      img.src = src;
-      document.body.appendChild(img);
-      */
-      console.log(pixels);
-
-      // copy to atlas
-      // TODO: bitblt? ndarray-group?
-      for (var i = 0; i < pixels.shape[0]; i += 1) {
-        for (var j = 0; j < pixels.shape[1]; j += 1) {
-          for (var k = 0; k < pixels.shape[2]; k += 1) {
-            var x = pixels.get(i, j, k);
-
-            self.atlas.set(self.nextX, self.nextY, i, j, k, x);
-          }
-        }
-      }
-      // point to next slot
-      self.nextX += 1;
-      if (self.nextX >= self.tileCount) {
-        self.nextX = 0;
-        self.nextY += 1; // TODO: instead, add to 4-dimensional strip then recast as 5-d?
-        if (self.nextY >= self.tileCount) {
-          throw new Error('texture sheet full! '+self.tileCount+'x'+self.tileCount+' exceeded');
-          // TODO: 'flip' the texture sheet, see https://github.com/deathcap/voxel-texture-shader/issues/2
-        }
-      }
-
-      self.emit('added');
-    }, function(err) {
-      console.log(err);
+    textureNames.forEach(function(textureName) {
+      self.addTextureName(textureName);
     });
   }
 }
+
+StitchPlugin.prototype.addTextureName = function(textureName) {
+  var self = this;
+
+  this.artpacks.getTextureNdarray(textureName, function(pixels) {
+    self.addTexturePixels(pixels);
+  }, function(err) {
+    console.log(err);
+  });
+};
+
+StitchPlugin.prototype.addTexturePixels = function(pixels) {
+  /* debug
+  var src = require('save-pixels')(pixels, 'canvas').toDataURL();
+  var img = new Image();
+  img.src = src;
+  document.body.appendChild(img);
+  */
+  console.log(pixels);
+
+  // copy to atlas
+  // TODO: bitblt? ndarray-group?
+  for (var i = 0; i < pixels.shape[0]; i += 1) {
+    for (var j = 0; j < pixels.shape[1]; j += 1) {
+      for (var k = 0; k < pixels.shape[2]; k += 1) {
+        var x = pixels.get(i, j, k);
+
+        this.atlas.set(this.nextX, this.nextY, i, j, k, x);
+      }
+    }
+  }
+  // point to next slot
+  this.nextX += 1;
+  if (this.nextX >= this.tileCount) {
+    this.nextX = 0;
+    this.nextY += 1; // TODO: instead, add to 4-dimensional strip then recast as 5-d?
+    if (this.nextY >= this.tileCount) {
+      throw new Error('texture sheet full! '+this.tileCount+'x'+this.tileCount+' exceeded');
+      // TODO: 'flip' the texture sheet, see https://github.com/deathcap/voxel-texture-shader/issues/2
+    }
+  }
+
+  this.emit('added');
+};
 
 StitchPlugin.prototype.enable = function() {
 };

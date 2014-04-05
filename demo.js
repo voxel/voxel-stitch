@@ -15,7 +15,7 @@ var fakeRegistry = {
         undefined,
         'dirt',
         'stone',
-        //['grass_top'], // TODO: arrays
+        ['grass_top', 'dirt', 'grass_side'],
       ];
     }
 };

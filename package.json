@@ -14,7 +14,8 @@
     "artpacks": "git://github.com/deathcap/artpacks.git#88e30b6c526100bd3aab1d1fb3e6c22043666b75",
     "ndarray": "^1.0.11",
     "inherits": "^2.0.1",
-    "ndarray-fill": "^0.1.0"
+    "ndarray-fill": "^0.1.0",
+    "toarray": "0.0.1"
   },
   "scripts": {
     "start": "beefy demo.js 9977"
