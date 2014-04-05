@@ -51,6 +51,53 @@ function StitchPlugin(game, opts) {
 
 inherits(StitchPlugin, EventEmitter);
 
+// expand a name into a 6-element array for each side
+// based on shama/voxel-texture _expandName
+var expandName = function(name, array) {
+  if (name.top) {
+    array[0] = name.back;
+    array[1] = name.front;
+    array[2] = name.top;
+    array[3] = name.bottom;
+    array[4] = name.left;
+    array[5] = name.right;
+    return;
+  }
+
+  // undefined -> [], scalar -> [scalar]
+  name = toarray(name);
+  if (name.length === 0) {
+    // empty
+    array[0] = array[1] = array[2] = array[3] = array[4] = array[5] = undefined;
+  } else if (name.length === 1) {
+    // 0 is all
+    array[0] = array[1] = array[2] = array[3] = array[4] = array[5] = name[0];
+  } else if (name.length === 2) {
+    // 0 is top/bottom, 1 is sides
+    array[0] = array[1] = array[4] = array[5] = name[0];
+    array[2] = array[3] = name[1];
+  } else if (name.length === 3) {
+    // 0 is top, 1 is bottom, 2 is sides
+    array[0] = array[1] = array[4] = array[5] = name[0];
+    array[2] = name[1];
+    array[3] = name[2];
+  } else if (name.length === 4) {
+    // 0 is top, 1 is bottom, 2 is front/back, 3 is left/right
+    array[0] = array[1] = name[2];
+    array[2] = name[0];
+    array[3] = name[1];
+    array[4] = array[5] = name[3];
+  } else {
+    // 0 is back, 1 is front, 2 is top, 3 is bottom, 4 is left, 5 is right
+    array[0] = name[0];
+    array[1] = name[1];
+    array[2] = name[2];
+    array[3] = name[3];
+    array[4] = name[4];
+    array[5] = name[5];
+  }
+};
+
 StitchPlugin.prototype.stitch = function() {
   var textures = this.registry.getBlockPropsAll('texture');
 
