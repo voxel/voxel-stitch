@@ -35,7 +35,7 @@ function StitchPlugin(game, opts) {
       // TODO: strides?
       );
 
-  this.nextX = this.nextY = 0;
+  this.nextY = this.nextX = 0;
   this.countLoading = 0;
   this.countLoaded = 0;
 
@@ -58,18 +58,18 @@ StitchPlugin.prototype.stitch = function() {
   for (var j = 0; j < textureNames.length; j += 1) {
     var textureName = textureNames[j];
 
-    this.addTextureName(textureName, this.nextX, this.nextY);
+    this.addTextureName(textureName, this.nextY, this.nextX);
     this.incrementSlot();
   }
 }
 
 StitchPlugin.prototype.incrementSlot = function() {
   // point to next slot
-  this.nextX += 1;
-  if (this.nextX >= this.tileCount) {
-    this.nextX = 0;
-    this.nextY += 1; // TODO: instead, add to 4-dimensional strip then recast as 5-d?
-    if (this.nextY >= this.tileCount) {
+  this.nextY += 1;
+  if (this.nextY >= this.tileCount) {
+    this.nextY = 0;
+    this.nextX += 1; // TODO: instead, add to 4-dimensional strip then recast as 5-d?
+    if (this.nextX >= this.tileCount) {
       throw new Error('texture sheet full! '+this.tileCount+'x'+this.tileCount+' exceeded');
       // TODO: 'flip' the texture sheet, see https://github.com/deathcap/voxel-texture-shader/issues/2
     }
@@ -77,17 +77,17 @@ StitchPlugin.prototype.incrementSlot = function() {
 };
 
 
-StitchPlugin.prototype.addTextureName = function(textureName, tileX, tileY) {
+StitchPlugin.prototype.addTextureName = function(textureName, tileY, tileX) {
   var self = this;
 
   this.artpacks.getTextureNdarray(textureName, function(pixels) {
-    self.addTexturePixels(pixels, tileX, tileY);
+    self.addTexturePixels(pixels, tileY, tileX);
   }, function(err) {
     console.log(err);
   });
 };
 
-StitchPlugin.prototype.addTexturePixels = function(pixels, tileX, tileY) {
+StitchPlugin.prototype.addTexturePixels = function(pixels, tileY, tileX) {
   /* debug
   var src = require('save-pixels')(pixels, 'canvas').toDataURL();
   var img = new Image();
@@ -101,7 +101,7 @@ StitchPlugin.prototype.addTexturePixels = function(pixels, tileX, tileY) {
   for (var i = 0; i < pixels.shape[0]; i += 1) {
     for (var j = 0; j < pixels.shape[1]; j += 1) {
       for (var k = 0; k < pixels.shape[2]; k += 1) {
-        this.atlas.set(tileX, tileY, i, j, k, pixels.get(i, j, k));
+        this.atlas.set(tileY, tileX, i, j, k, pixels.get(i, j, k));
       }
     }
   }
