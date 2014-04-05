@@ -53,6 +53,7 @@ inherits(StitchPlugin, EventEmitter);
 
 // expand a convenient shorthand name into a 6-element array for each side
 // based on shama/voxel-texture _expandName TODO: split into separate module?
+// TODO: the side ordering is different for ao-mesher! need to fix
 var expandName = function(name, array) {
   if (!name || name.length === 0) {
     // empty
@@ -106,21 +107,30 @@ var expandName = function(name, array) {
   }
 };
 
+var nameSideArray = new Array(6);
+
 StitchPlugin.prototype.stitch = function() {
   var textures = this.registry.getBlockPropsAll('texture');
-
   var textureNames = [];
 
-  for (var i = 0; i < textures.length; i += 1) {
-    textureNames = textureNames.concat(toarray(textures[i]));
+  // assign per-side texture indices for each voxel type
+  for (var blockIndex = 0; blockIndex < textures.length; blockIndex += 1) {
+    expandName(textures[blockIndex], nameSideArray);
 
-    // TODO: set to each face based on expandName()
-    for (var k = 0; k < 6; k += 1) {
-      this.voxelSideTextureIDs.set(i, k, i);
+    for (var side = 0; side < 6; side += 1) {
+      var name = nameSideArray[side];
+      if (!(name in textureNames)) {
+        // only add new textures
+        textureNames.push(name);
+      }
+
+      var textureIndex = textureNames.length - 1;
+      this.voxelSideTextureIDs.set(blockIndex, side, textureIndex);
     }
   }
   console.log(this.voxelSideTextureIDs);
 
+  // now asynchronously load each texture
   this.countLoading = textureNames.length;
 
   for (var j = 0; j < textureNames.length; j += 1) {
