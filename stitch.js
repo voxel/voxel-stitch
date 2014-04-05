@@ -4,7 +4,6 @@ var createArtpacks = require('artpacks');
 var ndarray = require('ndarray');
 var inherits = require('inherits');
 var EventEmitter = require('events').EventEmitter;
-var fill = require('ndarray-fill');
 var toarray = require('toarray');
 
 module.exports = function(game, opts) {
@@ -35,7 +34,6 @@ function StitchPlugin(game, opts) {
       [this.tileCount, this.tileCount, this.tileSize, this.tileSize, 4]
       // TODO: strides?
       );
-  fill(this.atlas, function(row,col,y,x,c) { return 80; }); // fill background for easier debugging TODO
 
   this.nextX = this.nextY = 0;
   this.countLoading = 0;
