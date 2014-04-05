@@ -52,25 +52,40 @@ StitchPlugin.prototype.stitch = function() {
   for (var i = 0; i < textures.length; i += 1) {
     var textureNames = toarray(textures[i]);
 
-    var self = this;
+    for (var j = 0; j < textureNames.length; j += 1) {
+      var textureName = textureNames[j];
 
-    textureNames.forEach(function(textureName) {
-      self.addTextureName(textureName);
-    });
+      this.addTextureName(textureName, this.nextX, this.nextY);
+      this.incrementSlot();
+    }
   }
 }
 
-StitchPlugin.prototype.addTextureName = function(textureName) {
+StitchPlugin.prototype.incrementSlot = function() {
+  // point to next slot
+  this.nextX += 1;
+  if (this.nextX >= this.tileCount) {
+    this.nextX = 0;
+    this.nextY += 1; // TODO: instead, add to 4-dimensional strip then recast as 5-d?
+    if (this.nextY >= this.tileCount) {
+      throw new Error('texture sheet full! '+this.tileCount+'x'+this.tileCount+' exceeded');
+      // TODO: 'flip' the texture sheet, see https://github.com/deathcap/voxel-texture-shader/issues/2
+    }
+  }
+};
+
+
+StitchPlugin.prototype.addTextureName = function(textureName, tileX, tileY) {
   var self = this;
 
   this.artpacks.getTextureNdarray(textureName, function(pixels) {
-    self.addTexturePixels(pixels);
+    self.addTexturePixels(pixels, tileX, tileY);
   }, function(err) {
     console.log(err);
   });
 };
 
-StitchPlugin.prototype.addTexturePixels = function(pixels) {
+StitchPlugin.prototype.addTexturePixels = function(pixels, tileX, tileY) {
   /* debug
   var src = require('save-pixels')(pixels, 'canvas').toDataURL();
   var img = new Image();
@@ -84,20 +99,8 @@ StitchPlugin.prototype.addTexturePixels = function(pixels) {
   for (var i = 0; i < pixels.shape[0]; i += 1) {
     for (var j = 0; j < pixels.shape[1]; j += 1) {
       for (var k = 0; k < pixels.shape[2]; k += 1) {
-        var x = pixels.get(i, j, k);
-
-        this.atlas.set(this.nextX, this.nextY, i, j, k, x);
+        this.atlas.set(tileX, tileY, i, j, k, pixels.get(i, j, k));
       }
-    }
-  }
-  // point to next slot
-  this.nextX += 1;
-  if (this.nextX >= this.tileCount) {
-    this.nextX = 0;
-    this.nextY += 1; // TODO: instead, add to 4-dimensional strip then recast as 5-d?
-    if (this.nextY >= this.tileCount) {
-      throw new Error('texture sheet full! '+this.tileCount+'x'+this.tileCount+' exceeded');
-      // TODO: 'flip' the texture sheet, see https://github.com/deathcap/voxel-texture-shader/issues/2
     }
   }
 
