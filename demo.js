@@ -25,6 +25,9 @@ plugin.on('added', function() {
   console.log('ATLAS=',plugin.atlas);
   show(plugin.atlas);
 });
+plugin.on('addedAll', function() {
+  console.log('added all');
+});
 
 plugin.stitch();
 
@@ -34,7 +37,7 @@ function show(atlas) {
   var createShader = require("gl-shader")
   var createTexture = require("gl-texture2d")
 
-  var lena = require("lena")
+  //var lena = require("lena")
 
   shell.on("gl-init", function() {
     var gl = shell.gl

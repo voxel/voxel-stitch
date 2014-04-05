@@ -39,7 +39,8 @@ function StitchPlugin(game, opts) {
   fill(this.atlas, function(row,col,y,x,c) { return 80; }); // fill background for easier debugging TODO
 
   this.nextX = this.nextY = 0;
-  this.pending = 0;
+  this.countLoading = 0;
+  this.countLoaded = 0;
 
   this.enable();
 }
@@ -49,15 +50,19 @@ inherits(StitchPlugin, EventEmitter);
 StitchPlugin.prototype.stitch = function() {
   var textures = this.registry.getBlockPropsAll('texture');
 
+  var textureNames = [];
+
   for (var i = 0; i < textures.length; i += 1) {
-    var textureNames = toarray(textures[i]);
+    textureNames = textureNames.concat(toarray(textures[i]));
+  }
 
-    for (var j = 0; j < textureNames.length; j += 1) {
-      var textureName = textureNames[j];
+  this.countLoading = textureNames.length;
 
-      this.addTextureName(textureName, this.nextX, this.nextY);
-      this.incrementSlot();
-    }
+  for (var j = 0; j < textureNames.length; j += 1) {
+    var textureName = textureNames[j];
+
+    this.addTextureName(textureName, this.nextX, this.nextY);
+    this.incrementSlot();
   }
 }
 
@@ -105,6 +110,10 @@ StitchPlugin.prototype.addTexturePixels = function(pixels, tileX, tileY) {
   }
 
   this.emit('added');
+  this.countLoaded += 1;
+  if (this.countLoaded >= this.countLoading) {
+    this.emit('addedAll');
+  }
 };
 
 StitchPlugin.prototype.enable = function() {
