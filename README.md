@@ -7,6 +7,8 @@ and the texture data from [artpacks](https://github.com/deathcap/artpacks). The 
 5-dimensional [ndarray](https://github.com/mikolalysenko/ndarray) is in a format suitable for
 [gl-tile-map](https://github.com/mikolalysenko/gl-tile-map) to generate a [gl-texture2d](https://github.com/gl-modules/gl-texture2d).
 
+For an example, run `npm start` or try the [live demo](http://deathcap.github.io/voxel-stitch).
+
 ## Limitations
 
 The atlas is a fixed grid of tiles, all the same size. This means you cannot mix
