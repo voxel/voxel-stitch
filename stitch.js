@@ -23,7 +23,6 @@ function StitchPlugin(game, opts) {
   this.artpacks = createArtpacks(opts.artpacks);
 
   // texture atlas width and height
-  // MAX_TEXTURE_SIZE at http://webglstats.com/, 100% of WebGL users support 2048x2048
   this.atlasSize = opts.atlasSize !== undefined ? opts.atlasSize : 256;//2048; // requires downsampling each tile even if empty :( so make it smaller
   this.tileSize = opts.tileSize !== undefined ? opts.tileSize : 16;
   this.tileCount = this.atlasSize / this.tileSize; // each dimension
