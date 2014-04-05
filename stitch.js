@@ -119,7 +119,7 @@ StitchPlugin.prototype.stitch = function() {
 
     for (var side = 0; side < 6; side += 1) {
       var name = nameSideArray[side];
-      if (!(name in textureNames)) {
+      if (textureNames.indexOf(name) === -1) {
         // only add new textures
         textureNames.push(name);
       }
