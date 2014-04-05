@@ -119,12 +119,15 @@ StitchPlugin.prototype.stitch = function() {
 
     for (var side = 0; side < 6; side += 1) {
       var name = nameSideArray[side];
-      if (name && textureNames.indexOf(name) === -1) {
-        // only add new textures
+      if (!name) continue;
+
+      var textureIndex = textureNames.indexOf(name);
+      if (textureIndex === -1) {
+        // add new textures
         textureNames.push(name);
+        textureIndex = textureNames.length - 1;
       }
 
-      var textureIndex = textureNames.length - 1;
       this.voxelSideTextureIDs.set(blockIndex, side, textureIndex);
     }
   }
