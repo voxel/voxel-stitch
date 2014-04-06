@@ -1,7 +1,7 @@
 {
   "name": "voxel-stitch",
   "description": "stitch block textures together into a tile map",
-  "version": "0.1.0",
+  "version": "0.2.0",
   "main": "stitch.js",
   "repository": {
     "type": "git",
