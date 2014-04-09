@@ -18,7 +18,7 @@ function StitchPlugin(game, opts) {
   if (!this.registry) throw new Error('voxel-stitcher requires voxel-registry plugin');
 
   opts = opts || {};
-  opts.artpacks = opts.artpacks || ['https://dl.dropboxusercontent.com/u/258156216/artpacks/ProgrammerArt-2.2-dev-ResourcePack-20140308.zip'];
+  opts.artpacks = opts.artpacks || ['https://dl.dropboxusercontent.com/u/258156216/artpacks/ProgrammerArt-v2.2.1-dev-ResourcePack-20140322.zip'];
   this.artpacks = createArtpacks(opts.artpacks);
 
   // texture atlas width and height
