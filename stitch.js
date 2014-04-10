@@ -5,6 +5,7 @@ var ndarray = require('ndarray');
 var inherits = require('inherits');
 var EventEmitter = require('events').EventEmitter;
 var toarray = require('toarray');
+var async = require('async');
 
 module.exports = function(game, opts) {
   return new StitchPlugin(game, opts);
@@ -147,12 +148,20 @@ StitchPlugin.prototype.stitch = function() {
 
   console.log('about to load '+this.countLoading);
 
+  var textureNamesSlots = [];
   for (var j = 0; j < textureNames.length; j += 1) {
-    var textureName = textureNames[j];
-
-    this.addTextureName(textureName, this.nextY, this.nextX);
+    textureNamesSlots.push([textureNames[j], this.nextY, this.nextX]);
     this.incrementSlot();
   }
+
+  var self = this;
+  async.each(textureNamesSlots, function(elem, callback) {
+    var textureName = elem[0], tileY = elem[1], tileX = elem[2];
+    self.addTextureName(textureName, tileY, tileX, callback);
+  }, function(err) {
+    // when all textures complete
+    self.emit('addedAll');
+  });
 }
 
 StitchPlugin.prototype.incrementSlot = function() {
@@ -169,18 +178,21 @@ StitchPlugin.prototype.incrementSlot = function() {
 };
 
 
-StitchPlugin.prototype.addTextureName = function(textureName, tileY, tileX) {
+StitchPlugin.prototype.addTextureName = function(textureName, tileY, tileX, callback) {
   var self = this;
 
   console.log('addTextureName',textureName,tileY,tileX);
   this.artpacks.getTextureNdarray(textureName, function(pixels) {
     console.log('addTextureName callback',textureName,'calling addTexturePixels',tileY,tileX);
     self.addTexturePixels(pixels, tileY, tileX);
+    callback();
   }, function(err) {
     console.log(err);
+    callback(err);
   });
 };
 
+// sync
 StitchPlugin.prototype.addTexturePixels = function(pixels, tileY, tileX) {
   /* debug
   var src = require('save-pixels')(pixels, 'canvas').toDataURL();
@@ -201,11 +213,6 @@ StitchPlugin.prototype.addTexturePixels = function(pixels, tileY, tileX) {
   }
 
   this.emit('added');
-  this.countLoaded += 1;
-  if (this.countLoaded >= this.countLoading) {
-    console.log('addTexturePixels countLoaded',this.countLoaded,'/',this.countLoading);
-    this.emit('addedAll');
-  }
 };
 
 StitchPlugin.prototype.enable = function() {
