@@ -143,6 +143,9 @@ StitchPlugin.prototype.stitch = function() {
 
   // now asynchronously load each texture
   this.countLoading = textureNames.length;
+  this.countLoaded = 0;
+
+  console.log('about to load '+this.countLoading);
 
   for (var j = 0; j < textureNames.length; j += 1) {
     var textureName = textureNames[j];
@@ -169,7 +172,9 @@ StitchPlugin.prototype.incrementSlot = function() {
 StitchPlugin.prototype.addTextureName = function(textureName, tileY, tileX) {
   var self = this;
 
+  console.log('addTextureName',textureName,tileY,tileX);
   this.artpacks.getTextureNdarray(textureName, function(pixels) {
+    console.log('addTextureName callback',textureName,'calling addTexturePixels',tileY,tileX);
     self.addTexturePixels(pixels, tileY, tileX);
   }, function(err) {
     console.log(err);
@@ -198,6 +203,7 @@ StitchPlugin.prototype.addTexturePixels = function(pixels, tileY, tileX) {
   this.emit('added');
   this.countLoaded += 1;
   if (this.countLoaded >= this.countLoading) {
+    console.log('addTexturePixels countLoaded',this.countLoaded,'/',this.countLoading);
     this.emit('addedAll');
   }
 };
