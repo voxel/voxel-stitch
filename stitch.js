@@ -147,12 +147,19 @@ StitchPlugin.prototype.stitch = function() {
 
   console.log('about to load '+this.countLoading);
 
+  // first assign all textures to slots, in order
+  var textureNamesSlots = [];
   for (var j = 0; j < textureNames.length; j += 1) {
-    var textureName = textureNames[j];
-
-    this.addTextureName(textureName, this.nextY, this.nextX);
+    textureNamesSlots.push([textureNames[j], this.nextY, this.nextX]);
     this.incrementSlot();
   }
+
+  // then add to atlas
+  var  self = this;
+  textureNamesSlots.forEach(function(elem) {
+    var textureName = elem[0], tileY = elem[1], tileX = elem[2];
+    self.addTextureName(textureName, tileY, tileX);
+  });
 }
 
 StitchPlugin.prototype.incrementSlot = function() {
