@@ -209,7 +209,7 @@ StitchPlugin.prototype.addTexturePixels = function(pixels, tileY, tileX) {
 
   this.emit('added');
   this.countLoaded += 1;
-  if (this.countLoaded >= this.countLoading) {
+  if (this.countLoaded % this.countLoading === 0) {
     console.log('addTexturePixels countLoaded',this.countLoaded,'/',this.countLoading);
     this.emit('addedAll');
   }
