@@ -21,6 +21,7 @@ function StitchPlugin(game, opts) {
   opts = opts || {};
   opts.artpacks = opts.artpacks || ['https://dl.dropboxusercontent.com/u/258156216/artpacks/ProgrammerArt-v2.2.1-dev-ResourcePack-20140322.zip'];
   this.artpacks = createArtpacks(opts.artpacks);
+  this.artpacks.on('refresh', this.refresh.bind(this));
 
   // texture atlas width and height
   this.atlasSize = opts.atlasSize !== undefined ? opts.atlasSize : 256;//2048; // requires downsampling each tile even if empty :( so make it smaller
@@ -118,6 +119,8 @@ var expandName = function(name, array) {
 
 var nameSideArray = new Array(6);
 
+// get all block textures, assign sides, and call refresh()
+// (should only be called once)
 StitchPlugin.prototype.stitch = function() {
   var textures = this.registry.getBlockPropsAll('texture');
   var textureNames = [];
@@ -146,15 +149,21 @@ StitchPlugin.prototype.stitch = function() {
   this.countLoaded = 0;
 
   // first assign all textures to slots, in order
-  var textureNamesSlots = [];
+  this.textureNamesSlots = [];
   for (var j = 0; j < textureNames.length; j += 1) {
-    textureNamesSlots.push([textureNames[j], this.nextY, this.nextX]);
+    this.textureNamesSlots.push([textureNames[j], this.nextY, this.nextX]);
     this.incrementSlot();
   }
 
   // then add to atlas
+  this.refresh();
+};
+
+// add textures
+// (may be called repeatedly to update textures if pack changes)
+StitchPlugin.prototype.refresh = function() {
   var self = this;
-  textureNamesSlots.forEach(function(elem) {
+  this.textureNamesSlots.forEach(function(elem) {
     var textureName = elem[0], tileY = elem[1], tileX = elem[2];
     self.addTextureName(textureName, tileY, tileX);
   });
