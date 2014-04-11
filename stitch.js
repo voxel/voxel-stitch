@@ -155,7 +155,7 @@ StitchPlugin.prototype.stitch = function() {
   }
 
   // then add to atlas
-  var  self = this;
+  var self = this;
   textureNamesSlots.forEach(function(elem) {
     var textureName = elem[0], tileY = elem[1], tileX = elem[2];
     self.addTextureName(textureName, tileY, tileX);
