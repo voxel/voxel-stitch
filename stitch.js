@@ -6,6 +6,7 @@ var inherits = require('inherits');
 var EventEmitter = require('events').EventEmitter;
 var toarray = require('toarray');
 var async = require('async');
+var savePixels = require('save-pixels');
 
 module.exports = function(game, opts) {
   return new StitchPlugin(game, opts);
@@ -186,11 +187,7 @@ StitchPlugin.prototype.addTextureName = function(textureName, tileY, tileX, call
     console.log('addTextureName callback',textureName,'calling addTexturePixels',tileY,tileX);
     self.addTexturePixels(pixels, tileY, tileX);
     console.log('!! about to call callback for ',textureName,tileY,tileX);
-    try {
-      callback();
-    } catch(e) {
-      // oops
-    }
+    callback();
   }, function(err) {
     console.log(err);
     callback(err);
@@ -200,7 +197,7 @@ StitchPlugin.prototype.addTextureName = function(textureName, tileY, tileX, call
 // sync
 StitchPlugin.prototype.addTexturePixels = function(pixels, tileY, tileX) {
   /* debug
-  var src = require('save-pixels')(pixels, 'canvas').toDataURL();
+  var src = savePixels(pixels, 'canvas').toDataURL();
   var img = new Image();
   img.src = src;
   document.body.appendChild(img);
@@ -219,6 +216,17 @@ StitchPlugin.prototype.addTexturePixels = function(pixels, tileY, tileX) {
 
   this.emit('added');
 };
+
+StitchPlugin.prototype.showAtlas = function() {
+  var img = new Image();
+  var pixels = ndarray(this.atlas,
+      //[this.tileCount, this.tileCount, this.tileSize, this.tileSize, 4]);
+      [this.tileSize * this.tileCount, this.tileSize * this.tileCount, 4]);
+
+  img.src = savePixels(pixels, 'canvas').toDataURL();
+  console.log(img.src);
+  document.body.appendChild(img);
+}
 
 StitchPlugin.prototype.enable = function() {
 };
