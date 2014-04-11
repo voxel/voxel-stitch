@@ -185,7 +185,12 @@ StitchPlugin.prototype.addTextureName = function(textureName, tileY, tileX, call
   this.artpacks.getTextureNdarray(textureName, function(pixels) {
     console.log('addTextureName callback',textureName,'calling addTexturePixels',tileY,tileX);
     self.addTexturePixels(pixels, tileY, tileX);
-    callback();
+    console.log('!! about to call callback for ',textureName,tileY,tileX);
+    try {
+      callback();
+    } catch(e) {
+      // oops
+    }
   }, function(err) {
     console.log(err);
     callback(err);
