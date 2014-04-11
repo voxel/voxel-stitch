@@ -5,6 +5,7 @@ var ndarray = require('ndarray');
 var inherits = require('inherits');
 var EventEmitter = require('events').EventEmitter;
 var toarray = require('toarray');
+var savePixels = require('save-pixels');
 
 module.exports = function(game, opts) {
   return new StitchPlugin(game, opts);
@@ -185,7 +186,7 @@ StitchPlugin.prototype.addTextureName = function(textureName, tileY, tileX) {
 
 StitchPlugin.prototype.addTexturePixels = function(pixels, tileY, tileX) {
   /* debug
-  var src = require('save-pixels')(pixels, 'canvas').toDataURL();
+  var src = savePixels(pixels, 'canvas').toDataURL();
   var img = new Image();
   img.src = src;
   document.body.appendChild(img);
@@ -207,6 +208,17 @@ StitchPlugin.prototype.addTexturePixels = function(pixels, tileY, tileX) {
     this.emit('addedAll');
   }
 };
+
+StitchPlugin.prototype.showAtlas = function() {
+  var img = new Image();
+  var pixels = ndarray(this.atlas.data,
+      //[this.atlas.shape[0] * this.atlas.shape[2], this.atlas.shape[1] * this.atlas.shape[3], this.atlas.shape[4]]); // reshapeTileMap from gl-tile-map, same
+      [this.tileSize * this.tileCount, this.tileSize * this.tileCount, 4]);
+
+  img.src = savePixels(pixels, 'canvas').toDataURL();
+  console.log(img.src);
+  document.body.appendChild(img);
+}
 
 StitchPlugin.prototype.enable = function() {
 };
