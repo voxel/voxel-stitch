@@ -139,13 +139,10 @@ StitchPlugin.prototype.stitch = function() {
       this.voxelSideTextureIDs.set(blockIndex, side, textureIndex);
     }
   }
-  console.log(this.voxelSideTextureIDs);
 
   // now asynchronously load each texture
   this.countLoading = textureNames.length;
   this.countLoaded = 0;
-
-  console.log('about to load '+this.countLoading);
 
   // first assign all textures to slots, in order
   var textureNamesSlots = [];
@@ -179,12 +176,10 @@ StitchPlugin.prototype.incrementSlot = function() {
 StitchPlugin.prototype.addTextureName = function(textureName, tileY, tileX) {
   var self = this;
 
-  console.log('addTextureName',textureName,tileY,tileX);
   this.artpacks.getTextureNdarray(textureName, function(pixels) {
-    console.log('addTextureName callback',textureName,'calling addTexturePixels',tileY,tileX);
     self.addTexturePixels(pixels, tileY, tileX);
   }, function(err) {
-    console.log(err);
+    console.log(err, textureName);
   });
 };
 
@@ -195,7 +190,6 @@ StitchPlugin.prototype.addTexturePixels = function(pixels, tileY, tileX) {
   img.src = src;
   document.body.appendChild(img);
   */
-  console.log(pixels);
 
   // copy to atlas
   // TODO: bitblt? ndarray-group?
@@ -210,7 +204,6 @@ StitchPlugin.prototype.addTexturePixels = function(pixels, tileY, tileX) {
   this.emit('added');
   this.countLoaded += 1;
   if (this.countLoaded % this.countLoading === 0) {
-    console.log('addTexturePixels countLoaded',this.countLoaded,'/',this.countLoading);
     this.emit('addedAll');
   }
 };
