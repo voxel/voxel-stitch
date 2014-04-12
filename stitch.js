@@ -11,6 +11,7 @@ var createAtlas = require('atlaspack');
 var createTexture = require('gl-texture2d');
 var getPixels = require('get-pixels');
 var rectMipMap = require('rect-mip-map');
+var touchup = require('touchup');
 
 module.exports = function(game, opts) {
   return new StitchPlugin(game, opts);
@@ -195,15 +196,23 @@ StitchPlugin.prototype.addTextureName = function(name) {
   var self = this;
 
   this.artpacks.getTextureImage(name, function(img) {
-    img.name = name;
-    self.atlas.pack(img)
 
-    self.emit('added');
+    // if is animated strip, use only first frame for now TODO: animate
+    if (Array.isArray(img))
+      img = img[0];
 
-    self.countLoaded += 1;
-    if (self.countLoaded % self.countLoading === 0) {
-      self.emit('addedAll');
-    }
+    var img2 = new Image();
+    img2.onload = function() {
+      self.atlas.pack(img2)
+      self.emit('added');
+
+      self.countLoaded += 1;
+      if (self.countLoaded % self.countLoading === 0) {
+        self.emit('addedAll');
+      }
+    };
+    img2.src = touchup.repeat(img, 2, 2);
+
   }, function(err) {
     console.log('addTextureName error in getTextureImage for '+name+': '+err);
   });
