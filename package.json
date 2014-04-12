@@ -1,6 +1,6 @@
 {
   "name": "voxel-stitch",
-  "description": "stitch block textures together into a tile map",
+  "description": "atlaspack block textures from voxel-registry",
   "version": "0.2.2",
   "main": "stitch.js",
   "repository": {
@@ -8,13 +8,18 @@
     "url": "git@github.com:deathcap/voxel-stitch.git"
   },
   "keywords": [
+    "atlas",
+    "atlaspack",
+    "textures",
+    "blocks",
     "voxel"
   ],
   "dependencies": {
     "artpacks": "^0.3.1",
     "ndarray": "^1.0.11",
     "inherits": "^2.0.1",
-    "toarray": "0.0.1"
+    "toarray": "0.0.1",
+    "atlaspack": "^0.2.5"
   },
   "scripts": {
     "start": "beefy demo.js 9977"

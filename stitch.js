@@ -6,6 +6,7 @@ var inherits = require('inherits');
 var EventEmitter = require('events').EventEmitter;
 var toarray = require('toarray');
 var savePixels = require('save-pixels');
+var createAtlas = require('atlaspack');
 
 module.exports = function(game, opts) {
   return new StitchPlugin(game, opts);
@@ -20,24 +21,19 @@ function StitchPlugin(game, opts) {
 
   opts = opts || {};
   opts.artpacks = opts.artpacks || ['https://dl.dropboxusercontent.com/u/258156216/artpacks/ProgrammerArt-v2.2.1-dev-ResourcePack-20140322.zip'];
-  this.artpacks = createArtpacks(opts.artpacks);
-  this.artpacks.on('refresh', this.refresh.bind(this));
 
   // texture atlas width and height
-  this.atlasSize = opts.atlasSize !== undefined ? opts.atlasSize : 256;//2048; // requires downsampling each tile even if empty :( so make it smaller
+  this.atlasSize = opts.atlasSize !== undefined ? opts.atlasSize : 256;//2048; // requires downsampling each tile even if empty :( so make it smaller TODO: not after rect-tile-map!
   this.tileSize = opts.tileSize !== undefined ? opts.tileSize : 16;
   this.tileCount = this.atlasSize / this.tileSize; // each dimension
 
-  // 5-dimensional array of tiles compatible with:
-  //  https://github.com/mikolalysenko/tile-mip-map
-  //  https://github.com/mikolalysenko/gl-tile-map
-  // [rows, columns, tile height, tile width, channels]
-  this.atlas = ndarray(new Uint8Array(this.atlasSize * this.atlasSize * 4),
-      [this.tileCount, this.tileCount, this.tileSize, this.tileSize, 4]
-      // TODO: strides?
-      );
+  var canvas = document.createElement('canvas');
+  canvas.width = canvas.height = this.atlasSize;
+  this.atlas = createAtlas(canvas);
 
-  this.nextY = this.nextX = 0;
+  this.artpacks = createArtpacks(opts.artpacks);
+  this.artpacks.on('refresh', this.refresh.bind(this));
+
   this.countLoading = 0;
   this.countLoaded = 0;
 
@@ -144,89 +140,46 @@ StitchPlugin.prototype.stitch = function() {
     }
   }
 
-  // now asynchronously load each texture
-  this.countLoading = textureNames.length;
-  this.countLoaded = 0;
-
-  // first assign all textures to slots, in order
+  // now add each texture to the atlas
   this.textureNamesSlots = [];
   for (var j = 0; j < textureNames.length; j += 1) {
-    this.textureNamesSlots.push([textureNames[j], this.nextY, this.nextX]);
-    this.incrementSlot();
+    this.addTextureName(textureNames[j]);
   }
-
-  // then add to atlas
-  this.refresh();
+  // TODO this.refresh();
 };
 
 // add textures
 // (may be called repeatedly to update textures if pack changes)
 StitchPlugin.prototype.refresh = function() {
+/* TODO: problem - atlaspack pack() adds a new entry to the but we want to overwrite!
   var self = this;
   this.textureNamesSlots.forEach(function(elem) {
     var textureName = elem[0], tileY = elem[1], tileX = elem[2];
     self.addTextureName(textureName, tileY, tileX);
   });
+*/
 }
 
-StitchPlugin.prototype.incrementSlot = function() {
-  // point to next slot
-  this.nextY += 1;
-  if (this.nextY >= this.tileCount) {
-    this.nextY = 0;
-    this.nextX += 1; // TODO: instead, add to 4-dimensional strip then recast as 5-d?
-    if (this.nextX >= this.tileCount) {
-      throw new Error('texture sheet full! '+this.tileCount+'x'+this.tileCount+' exceeded');
-      // TODO: 'flip' the texture sheet, see https://github.com/deathcap/voxel-texture-shader/issues/2
-    }
-  }
-};
-
-
-StitchPlugin.prototype.addTextureName = function(textureName, tileY, tileX) {
+StitchPlugin.prototype.addTextureName = function(name) {
   var self = this;
 
-  this.artpacks.getTextureNdarray(textureName, function(pixels) {
-    self.addTexturePixels(pixels, tileY, tileX);
+  this.artpacks.getTextureImage(name, function(img) {
+    img.name = name;
+    self.atlas.pack(img)
+
+    self.emit('added');
+
+    self.countLoaded += 1;
+    if (self.countLoaded % self.countLoading === 0) {
+      self.emit('addedAll');
+    }
   }, function(err) {
-    console.log(err, textureName);
+    console.log('addTextureName error in getTextureImage for '+name+': '+err);
   });
 };
 
-StitchPlugin.prototype.addTexturePixels = function(pixels, tileY, tileX) {
-  /* debug
-  var src = savePixels(pixels, 'canvas').toDataURL();
-  var img = new Image();
-  img.src = src;
-  document.body.appendChild(img);
-  */
-
-  // copy to atlas
-  // TODO: bitblt? ndarray-group?
-  for (var i = 0; i < pixels.shape[0]; i += 1) {
-    for (var j = 0; j < pixels.shape[1]; j += 1) {
-      for (var k = 0; k < pixels.shape[2]; k += 1) {
-        this.atlas.set(tileY, tileX, i, j, k, pixels.get(i, j, k));
-      }
-    }
-  }
-
-  this.emit('added');
-  this.countLoaded += 1;
-  if (this.countLoaded % this.countLoading === 0) {
-    this.emit('addedAll');
-  }
-};
-
 StitchPlugin.prototype.showAtlas = function() {
-  var img = new Image();
-  var pixels = ndarray(this.atlas.data,
-      //[this.atlas.shape[0] * this.atlas.shape[2], this.atlas.shape[1] * this.atlas.shape[3], this.atlas.shape[4]]); // reshapeTileMap from gl-tile-map, same
-      [this.tileSize * this.tileCount, this.tileSize * this.tileCount, 4]);
-
-  img.src = savePixels(pixels, 'canvas').toDataURL();
-  console.log(img.src);
-  document.body.appendChild(img);
+  document.body.appendChild(this.atlas.canvas);
 }
 
 StitchPlugin.prototype.enable = function() {
