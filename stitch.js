@@ -203,6 +203,7 @@ StitchPlugin.prototype.addTextureName = function(name) {
 
     var img2 = new Image();
     img2.onload = function() {
+      img2.name = name;
       self.atlas.pack(img2)
       self.emit('added');
 
