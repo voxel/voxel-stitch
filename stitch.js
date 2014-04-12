@@ -8,6 +8,10 @@ var toarray = require('toarray');
 var savePixels = require('save-pixels');
 var createAtlas = require('atlaspack');
 
+var createTexture = require('gl-texture2d');
+var getPixels = require('get-pixels');
+var rectMipMap = require('rect-mip-map');
+
 module.exports = function(game, opts) {
   return new StitchPlugin(game, opts);
 };
@@ -142,6 +146,7 @@ StitchPlugin.prototype.stitch = function() {
 
   // now add each texture to the atlas
   this.textureNamesSlots = [];
+  this.countLoading = textureNames.length;
   for (var j = 0; j < textureNames.length; j += 1) {
     this.addTextureName(textureNames[j]);
   }
@@ -159,6 +164,32 @@ StitchPlugin.prototype.refresh = function() {
   });
 */
 }
+
+// create gl-texture2d for atlas with each mip level
+// like https://github.com/mikolalysenko/gl-tile-map/blob/master/tilemap.js but uses rect-tile-map
+StitchPlugin.prototype.createGLTexture = function(gl, cb) {
+  var atlas = this.atlas;
+
+  getPixels(this.atlas.canvas.toDataURL(), function(err, array) {
+    if (err) return cb(err);
+
+    var pyramid = rectMipMap(array, atlas);
+    console.log('pyramid=',pyramid);
+
+    var tex = createTexture(gl, pyramid[0]);
+    tex.generateMipmap(); // TODO: ?
+
+    for (var i = 1; i < pyramid.length; ++i) {
+      tex.setPixels(pyramid[i], 0, 0, i);
+    }
+
+    tex.magFilter = gl.NEAREST
+    tex.minFilter = gl.LINEAR_MIPMAP_LINEAR
+    tex.mipSamples = 4
+
+    cb(null, tex);
+  });
+};
 
 StitchPlugin.prototype.addTextureName = function(name) {
   var self = this;

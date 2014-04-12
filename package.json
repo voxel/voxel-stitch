@@ -15,11 +15,14 @@
     "voxel"
   ],
   "dependencies": {
+    "rect-mip-map": "git://github.com/deathcap/rect-mip-map.git",
     "artpacks": "^0.3.1",
     "ndarray": "^1.0.11",
     "inherits": "^2.0.1",
     "toarray": "0.0.1",
-    "atlaspack": "^0.2.5"
+    "atlaspack": "^0.2.5",
+    "get-pixels": "^1.0.1",
+    "gl-texture2d": "^1.0.1"
   },
   "scripts": {
     "start": "beefy demo.js 9977"
