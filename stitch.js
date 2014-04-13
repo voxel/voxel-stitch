@@ -30,7 +30,7 @@ function StitchPlugin(game, opts) {
   this.debug = opts.debug !== undefined ? opts.debug : false;
 
   // texture atlas width and height
-  this.atlasSize = opts.atlasSize !== undefined ? opts.atlasSize : 512; // TODO: fix wrong textures & indices with any other size (https://github.com/deathcap/voxel-stitch/issues/4)
+  this.atlasSize = opts.atlasSize !== undefined ? opts.atlasSize : 512;
   this.tileSize = opts.tileSize !== undefined ? opts.tileSize : 16;
   this.tilePad = 2;
   this.tileCount = this.atlasSize / this.tileSize / this.tilePad; // each dimension
@@ -45,8 +45,9 @@ function StitchPlugin(game, opts) {
   this.countLoading = 0;
   this.countLoaded = 0;
 
-  this.textureArrayType = opts.textureArrayType || Uint8Array; // TODO: switch to 16-bit
-  this.countTextureID = opts.countTextureID || (2 << 7); // TODO: switch to 16-bit
+  this.textureArraySize = opts.textureArraySize || 8; // TODO: switch to 16-bit, https://github.com/deathcap/voxel-stitch/issues/5
+  this.textureArrayType = opts.textureArrayType || {8:Uint8Array, 16:Uint16Array, 32:Uint32Array}[this.textureArraySize];
+  this.countTextureID = opts.countTextureID || (1 << this.textureArraySize);
   this.countVoxelID = opts.countVoxelID || (2 << 14); // ao-mesher uses 16-bit, but top 1 bit is opaque/transparent flag TODO: flat 16-bit
 
   // 2-dimensional array of [voxelID, side] -> textureID
@@ -182,6 +183,10 @@ StitchPlugin.prototype.updateTextureSideIDs = function() {
     var tileY = sy / (this.tileSize * this.tilePad);
     var tileX = sx / (this.tileSize * this.tilePad);
     var textureIndex = tileY + this.tileCount * tileX;
+
+    if (textureIndex >= this.countTextureID) {
+      throw new Error('voxel-stitch maximum texture ID exceeded in '+name+' at ('+tileX+','+tileY+'), try increasing textureArraySize?');
+    }
 
     for (var i = 0; i < this.sidesFor[name].length; ++i) {
       var elem = this.sidesFor[name][i];
