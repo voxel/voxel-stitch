@@ -30,7 +30,7 @@ function StitchPlugin(game, opts) {
   this.debug = opts.debug !== undefined ? opts.debug : false;
 
   // texture atlas width and height
-  this.atlasSize = opts.atlasSize !== undefined ? opts.atlasSize : 512;
+  this.atlasSize = opts.atlasSize !== undefined ? opts.atlasSize : 2048;
   this.tileSize = opts.tileSize !== undefined ? opts.tileSize : 16;
   this.tilePad = 2;
   this.tileCount = this.atlasSize / this.tileSize / this.tilePad; // each dimension
@@ -45,7 +45,7 @@ function StitchPlugin(game, opts) {
   this.countLoading = 0;
   this.countLoaded = 0;
 
-  this.textureArraySize = opts.textureArraySize || 8; // TODO: switch to 16-bit, https://github.com/deathcap/voxel-stitch/issues/5
+  this.textureArraySize = opts.textureArraySize || 16;
   this.textureArrayType = opts.textureArrayType || {8:Uint8Array, 16:Uint16Array, 32:Uint32Array}[this.textureArraySize];
   this.countTextureID = opts.countTextureID || (1 << this.textureArraySize);
   this.countVoxelID = opts.countVoxelID || (2 << 14); // ao-mesher uses 16-bit, but top 1 bit is opaque/transparent flag TODO: flat 16-bit
