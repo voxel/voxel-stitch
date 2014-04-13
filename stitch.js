@@ -126,7 +126,7 @@ var nameSideArray = new Array(6);
 StitchPlugin.prototype.stitch = function() {
   var textures = this.registry.getBlockPropsAll('texture');
   var textureNames = [];
-  var sidesFor = {};
+  this.sidesFor = {};
 
   // iterate each block and each side for all textures, accumulate textureNames and sidesFor
   for (var blockIndex = 0; blockIndex < textures.length; blockIndex += 1) {
@@ -142,8 +142,8 @@ StitchPlugin.prototype.stitch = function() {
       }
 
       // this texture is for this block ID and side
-      sidesFor[name] = sidesFor[name] || [];
-      sidesFor[name].push([blockIndex, side]);
+      this.sidesFor[name] = this.sidesFor[name] || [];
+      this.sidesFor[name].push([blockIndex, side]);
     }
   }
 
@@ -155,37 +155,42 @@ StitchPlugin.prototype.stitch = function() {
   }
 
   // when all textures are loaded, set texture indices from UV maps
-  var self = this;
-  this.on('addedAll', function() {
-    var uvs = self.atlas.uv();
-    for (var name in uvs) {
-      // TODO: refactor with rect-mip-map, similar conversion code
-      // UV coordinates 0.0 - 1.0
-      var uvTopLeft = uvs[name][0];      // *\  01
-      var uvBottomRight = uvs[name][2];  // \*  23
-
-      // scale UVs by image size to get pixel coordinates
-      var mx = self.atlasSize, my = self.atlasSize;
-      var sx = uvTopLeft[0] * mx, sy = uvTopLeft[1] * my;
-      var ex = uvBottomRight[0] * mx, ey = uvBottomRight[1] * my;
-      var w = ex - sx;
-      var h = ey - sy;
-
-
-      // atlaspack gives UV coords, but ao-shader wants texture index
-      var textureIndex = sx / (self.tileSize * self.tilePad) + (sy / (self.tileSize * self.tilePad) * self.tileCount);
-
-      sidesFor[name].forEach(function(elem) {
-        var blockIndex = elem[0], side = elem[1];
-
-        self.voxelSideTextureIDs.set(blockIndex, side, textureIndex);
-        console.log('block',blockIndex,self.registry.getBlockName(blockIndex),'side',side,'=',textureIndex);
-      });
-      // TODO: texture sizes, w and h
-    }
-  });
+  this.on('addedAll', this.updateTextureSideIDs.bind(this));
 
   // TODO this.refresh();
+};
+
+// calculate self.voxelSideTextureIDs.set [blockIndex,side] -> textureIndex for ao-mesher
+StitchPlugin.prototype.updateTextureSideIDs = function() {
+  var uvs = this.atlas.uv();
+  for (var name in uvs) {
+    // TODO: refactor with rect-mip-map, similar conversion code
+    // UV coordinates 0.0 - 1.0
+    var uvTopLeft = uvs[name][0];      // *\  01
+    var uvBottomRight = uvs[name][2];  // \*  23
+
+    // scale UVs by image size to get pixel coordinates
+    var mx = this.atlasSize, my = this.atlasSize;
+    var sx = uvTopLeft[0] * mx, sy = uvTopLeft[1] * my;
+    var ex = uvBottomRight[0] * mx, ey = uvBottomRight[1] * my;
+    var w = ex - sx;
+    var h = ey - sy;
+
+
+    // atlaspack gives UV coords, but ao-mesher wants texture index
+    var textureIndex = sx / (this.tileSize * this.tilePad) + (sy / (this.tileSize * this.tilePad) * this.tileCount);
+
+    for (var i = 0; i < this.sidesFor[name].length; ++i) {
+      var elem = this.sidesFor[name][i];
+      var blockIndex = elem[0], side = elem[1];
+
+      this.voxelSideTextureIDs.set(blockIndex, side, textureIndex);
+      console.log('block',blockIndex,this.registry.getBlockName(blockIndex),'side',side,'=',textureIndex);
+    }
+    // TODO: texture sizes, w and h
+  }
+
+  this.emit('updateTexture');
 };
 
 // add textures
