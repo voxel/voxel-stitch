@@ -30,7 +30,7 @@ function StitchPlugin(game, opts) {
   this.debug = opts.debug !== undefined ? opts.debug : false;
 
   // texture atlas width and height
-  this.atlasSize = opts.atlasSize !== undefined ? opts.atlasSize : 256;//2048; // requires downsampling each tile even if empty :( so make it smaller TODO: not after rect-tile-map!
+  this.atlasSize = opts.atlasSize !== undefined ? opts.atlasSize : 512; // TODO: fix wrong textures & indices with any other size
   this.tileSize = opts.tileSize !== undefined ? opts.tileSize : 16;
   this.tileCount = this.atlasSize / this.tileSize; // each dimension
   this.tilePad = 2;
@@ -180,15 +180,15 @@ StitchPlugin.prototype.updateTextureSideIDs = function() {
 
 
     // atlaspack gives UV coords, but ao-mesher wants texture index
-    var textureIndex = sy / (this.tileSize * this.tilePad) + (sx / (this.tileSize * this.tilePad) * this.tileCount);
-    textureIndex *= this.tilePad;
+    //var textureIndex = sy / (this.tileSize * this.tilePad) + (sx / (this.tileSize * this.tilePad) * (this.tileCount / this.tilePad));
+    var textureIndex = sy / (this.tileSize * this.tilePad) + (sx / (this.tileSize * this.tilePad) * (this.tileCount / this.tilePad));
 
     for (var i = 0; i < this.sidesFor[name].length; ++i) {
       var elem = this.sidesFor[name][i];
       var blockIndex = elem[0], side = elem[1];
 
       this.voxelSideTextureIDs.set(blockIndex, side, textureIndex);
-      console.log('block',blockIndex,this.registry.getBlockName(blockIndex+1),'side',side,'=',textureIndex,' UV=('+sx+','+sy+')-('+ex+','+ey+') ('+w+'x'+h+')');
+      console.log('texture',name,': block',blockIndex,this.registry.getBlockName(blockIndex+1),'side',side,'=',textureIndex,' UV=('+sx+','+sy+')-('+ex+','+ey+') ('+w+'x'+h+')');
     }
     // TODO: texture sizes, w and h
   }
