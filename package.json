@@ -15,7 +15,7 @@
     "voxel"
   ],
   "dependencies": {
-    "rect-mip-map": "git://github.com/deathcap/rect-mip-map.git",
+    "rect-mip-map": "^0.1.0",
     "artpacks": "^0.3.1",
     "ndarray": "^1.0.11",
     "inherits": "^2.0.1",
