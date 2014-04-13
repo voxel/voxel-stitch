@@ -180,8 +180,7 @@ StitchPlugin.prototype.updateTextureSideIDs = function() {
 
 
     // atlaspack gives UV coords, but ao-mesher wants texture index
-    //var textureIndex = sy / (this.tileSize * this.tilePad) + (sx / (this.tileSize * this.tilePad) * (this.tileCount / this.tilePad));
-    var textureIndex = sy / (this.tileSize * this.tilePad) + (sx / (this.tileSize * this.tilePad) * (this.tileCount / this.tilePad));
+    var textureIndex = sy / (this.tileSize * this.tilePad) + (sx / (this.tileSize * this.tilePad) * this.tileSize);
 
     for (var i = 0; i < this.sidesFor[name].length; ++i) {
       var elem = this.sidesFor[name][i];
