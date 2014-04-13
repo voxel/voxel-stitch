@@ -31,6 +31,7 @@ function StitchPlugin(game, opts) {
   this.atlasSize = opts.atlasSize !== undefined ? opts.atlasSize : 256;//2048; // requires downsampling each tile even if empty :( so make it smaller TODO: not after rect-tile-map!
   this.tileSize = opts.tileSize !== undefined ? opts.tileSize : 16;
   this.tileCount = this.atlasSize / this.tileSize; // each dimension
+  this.tilePad = 2;
 
   var canvas = document.createElement('canvas');
   canvas.width = canvas.height = this.atlasSize;
@@ -125,8 +126,9 @@ var nameSideArray = new Array(6);
 StitchPlugin.prototype.stitch = function() {
   var textures = this.registry.getBlockPropsAll('texture');
   var textureNames = [];
+  var sidesFor = {};
 
-  // assign per-side texture indices for each voxel type
+  // iterate each block and each side for all textures, accumulate textureNames and sidesFor
   for (var blockIndex = 0; blockIndex < textures.length; blockIndex += 1) {
     expandName(textures[blockIndex], nameSideArray);
 
@@ -134,23 +136,55 @@ StitchPlugin.prototype.stitch = function() {
       var name = nameSideArray[side];
       if (!name) continue;
 
-      var textureIndex = textureNames.indexOf(name);
-      if (textureIndex === -1) {
+      if (textureNames.indexOf(name) === -1) {
         // add new textures
         textureNames.push(name);
-        textureIndex = textureNames.length - 1;
       }
 
-      this.voxelSideTextureIDs.set(blockIndex, side, textureIndex);
+      // this texture is for this block ID and side
+      sidesFor[name] = sidesFor[name] || [];
+      sidesFor[name].push([blockIndex, side]);
     }
   }
 
-  // now add each texture to the atlas
+  // add each texture to the atlas
   this.textureNamesSlots = [];
   this.countLoading = textureNames.length;
   for (var j = 0; j < textureNames.length; j += 1) {
     this.addTextureName(textureNames[j]);
   }
+
+  // when all textures are loaded, set texture indices from UV maps
+  var self = this;
+  this.on('addedAll', function() {
+    var uvs = self.atlas.uv();
+    for (var name in uvs) {
+      // TODO: refactor with rect-mip-map, similar conversion code
+      // UV coordinates 0.0 - 1.0
+      var uvTopLeft = uvs[name][0];      // *\  01
+      var uvBottomRight = uvs[name][2];  // \*  23
+
+      // scale UVs by image size to get pixel coordinates
+      var mx = self.atlasSize, my = self.atlasSize;
+      var sx = uvTopLeft[0] * mx, sy = uvTopLeft[1] * my;
+      var ex = uvBottomRight[0] * mx, ey = uvBottomRight[1] * my;
+      var w = ex - sx;
+      var h = ey - sy;
+
+
+      // atlaspack gives UV coords, but ao-shader wants texture index
+      var textureIndex = sx / (self.tileSize * self.tilePad) + (sy / (self.tileSize * self.tilePad) * self.tileCount);
+
+      sidesFor[name].forEach(function(elem) {
+        var blockIndex = elem[0], side = elem[1];
+
+        self.voxelSideTextureIDs.set(blockIndex, side, textureIndex);
+        console.log('block',blockIndex,self.registry.getBlockName(blockIndex),'side',side,'=',textureIndex);
+      });
+      // TODO: texture sizes, w and h
+    }
+  });
+
   // TODO this.refresh();
 };
 
@@ -204,7 +238,7 @@ StitchPlugin.prototype.addTextureName = function(name) {
     var img2 = new Image();
     img2.onload = function() {
       img2.name = name;
-      self.atlas.pack(img2)
+      self.atlas.pack(img2);
       self.emit('added');
 
       self.countLoaded += 1;
@@ -212,7 +246,7 @@ StitchPlugin.prototype.addTextureName = function(name) {
         self.emit('addedAll');
       }
     };
-    img2.src = touchup.repeat(img, 2, 2);
+    img2.src = touchup.repeat(img, self.tilePad, self.tilePad);
 
   }, function(err) {
     console.log('addTextureName error in getTextureImage for '+name+': '+err);
