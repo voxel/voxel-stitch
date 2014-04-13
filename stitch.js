@@ -30,7 +30,7 @@ function StitchPlugin(game, opts) {
   this.debug = opts.debug !== undefined ? opts.debug : false;
 
   // texture atlas width and height
-  this.atlasSize = opts.atlasSize !== undefined ? opts.atlasSize : 256; // TODO: fix wrong textures & indices with any other size (https://github.com/deathcap/voxel-stitch/issues/4)
+  this.atlasSize = opts.atlasSize !== undefined ? opts.atlasSize : 512; // TODO: fix wrong textures & indices with any other size (https://github.com/deathcap/voxel-stitch/issues/4)
   this.tileSize = opts.tileSize !== undefined ? opts.tileSize : 16;
   this.tilePad = 2;
   this.tileCount = this.atlasSize / this.tileSize / this.tilePad; // each dimension
@@ -179,19 +179,9 @@ StitchPlugin.prototype.updateTextureSideIDs = function() {
     var h = ey - sy;
 
     // atlaspack gives UV coords, but ao-mesher wants texture index
-    //var textureIndex = sy / (this.tileSize                   * this.tilePad) + (sx / (this.tileSize * this.tilePad) * this.tileSize);
-    //var textureIndex = sy / (this.tileSize                   * this.tilePad) // + (sx / (this.tileSize * this.tilePad) * this.tileSize);
-    //var textureIndex = sy / ((this.tileCount / this.tilePad) * this.tilePad) + (sx / (this.tileSize * this.tilePad) * this.tileSize);
     var tileY = sy / (this.tileSize * this.tilePad);
     var tileX = sx / (this.tileSize * this.tilePad);
-
     var textureIndex = tileY + this.tileCount * tileX;
-    //var textureIndex = /*tileY + */(this.tileCount / this.tilePad) * tileX;
-    //var textureIndex = /*tileY + */(this.tileCount / this.tilePad) * tileX;
-
-    //var textureIndex = tileY * (this.tileCount / this.tilePad) + tileX;
-    //var textureIndex = sy / ((this.tileCount / this.tilePad) * this.tilePad) + (sx / (this.tileSize * this.tilePad) * this.tileSize);
-    //var textureIndex = (sx / (this.tileSize * this.tilePad) * this.tileSize);
 
     for (var i = 0; i < this.sidesFor[name].length; ++i) {
       var elem = this.sidesFor[name][i];
