@@ -258,7 +258,10 @@ StitchPlugin.prototype.addTextureName = function(name) {
     var img2 = new Image();
     img2.onload = function() {
       img2.name = name;
-      self.atlas.pack(img2);
+      var node = self.atlas.pack(img2);
+      if (!node) {
+        throw new Error('voxel-stitch fatal error: texture sheet full! unable to fit '+name); // TODO: flip sheets for "infinite textures", see https://github.com/deathcap/voxel-texture-shader/issues/2
+      }
       self.emit('added');
 
       self.countLoaded += 1;
