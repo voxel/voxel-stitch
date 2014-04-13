@@ -27,6 +27,8 @@ function StitchPlugin(game, opts) {
   opts = opts || {};
   opts.artpacks = opts.artpacks || ['https://dl.dropboxusercontent.com/u/258156216/artpacks/ProgrammerArt-v2.2.1-dev-ResourcePack-20140322.zip'];
 
+  this.debug = opts.debug !== undefined ? opts.debug : false;
+
   // texture atlas width and height
   this.atlasSize = opts.atlasSize !== undefined ? opts.atlasSize : 256;//2048; // requires downsampling each tile even if empty :( so make it smaller TODO: not after rect-tile-map!
   this.tileSize = opts.tileSize !== undefined ? opts.tileSize : 16;
@@ -210,12 +212,25 @@ StitchPlugin.prototype.refresh = function() {
 // like https://github.com/mikolalysenko/gl-tile-map/blob/master/tilemap.js but uses rect-tile-map
 StitchPlugin.prototype.createGLTexture = function(gl, cb) {
   var atlas = this.atlas;
+  var showLevels = this.debug;
 
   getPixels(this.atlas.canvas.toDataURL(), function(err, array) {
     if (err) return cb(err);
 
     var pyramid = rectMipMap(array, atlas);
     console.log('pyramid=',pyramid);
+
+    if (showLevels) {
+      // add each mip level to the page for debugging TODO: refactor with rect-mip-map demo
+      pyramid.forEach(function(level, i) {
+        var img = new Image();
+        img.src = savePixels(level, 'canvas').toDataURL();
+        img.style.border = '1px dotted black';
+        document.body.appendChild(document.createElement('br'));
+        document.body.appendChild(img);
+        document.body.appendChild(document.createTextNode(' level #'+i+' ('+img.width+'x'+img.height+')'));
+      });
+    }
 
     var tex = createTexture(gl, pyramid[0]);
     tex.generateMipmap(); // TODO: ?
