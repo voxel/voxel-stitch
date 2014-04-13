@@ -1,23 +1,22 @@
 # voxel-stitch
 
-Stitches a set of block textures together into a tile map texture atlas
+Stitches a set of block textures together into a texture atlas
 
 The texture names are looked up from [voxel-registry](https://github.com/deathcap/voxel-registry)
-and the texture data from [artpacks](https://github.com/deathcap/artpacks). The resulting
-5-dimensional [ndarray](https://github.com/mikolalysenko/ndarray) is in a format suitable for
-[gl-tile-map](https://github.com/mikolalysenko/gl-tile-map) to generate a [gl-texture2d](https://github.com/gl-modules/gl-texture2d).
+and the texture data from [artpacks](https://github.com/deathcap/artpacks).
 
 For an example, run `npm start` or try the [live demo](http://deathcap.github.io/voxel-stitch).
 
-## Limitations
+## Arbitrary rects vs fixed arrays
+voxel-stitch uses
+[atlaspack](https://github.com/shama/atlaspack), which supports packing textures of arbitrary rectangular
+shapes onto a two-dimensional canvas. The mip maps are generated using
+[rect-tile-map](https://github.com/deathcap/rect-tile-map).
 
-The atlas is a fixed grid of tiles, all the same size. This means you cannot mix
-textures of different resolutions, unfortunately. See also
-[atlaspack](https://github.com/shama/atlaspack) (as used by
-[voxel-texture](https://github.com/shama/voxel-texture) and
-[voxel-texture-shader](https://github.com/deathcap/voxel-texture-shader)) for
-a more flexible arbitrary-rectangle packing approach.
-
+(Before version 0.3, voxel-stitch would generate a
+5-dimensional [ndarray](https://github.com/mikolalysenko/ndarray) is in a format suitable for
+[gl-tile-map](https://github.com/mikolalysenko/gl-tile-map) /
+[tile-mip-map](https://github.com/mikolalysenko/tile-mip-map), which required fixed texture sizes.)
 
 ## Usage
 Load using [voxel-plugins](https://github.com/deathcap/voxel-plugins), options:
@@ -26,19 +25,24 @@ Load using [voxel-plugins](https://github.com/deathcap/voxel-plugins), options:
 * `atlasSize`: Texture atlas width and height, in pixels. Note not all graphics cards support
 all texture dimensions, but [WebGL stats](http://webglstats.com/) shows `MAX_TEXTURE_SIZE` of 2048
 or smaller is supported by 100% of WebGL users.
+* `debug`: If true, writes out each mip level to the document for debugging.
 
 Methods:
 
 * `stitch()`: Build `this.atlas` from all block `texture` properties in voxel-registry.
+* `createGLTexture(gl, cb)`: Creates a [gl-texture2d](https://github.com/gl-modules/gl-texture2d) with the GL context, calls `cb(err, tex)` when complete,
+comparable to [gl-tile-map](https://github.com/mikolalysenko/gl-tile-map).
 
 Events (voxel-stitch is an [EventEmitter](http://nodejs.org/api/events.html) and emits the following):
 
 * `added`: Added one texture to the atlas.
 * `addedAll`: All of the textures in `stitch()` were added.
+* `updateTexture`: All textures were added and `voxelSideTextureIDs` has been populated.
 
 Variables:
 
-* `atlas`: an ndarray to pass to [gl-tile-map](https://github.com/mikolalysenko/gl-tile-map)
+* `atlas`: The [atlaspack](https://github.com/shama/atlaspack) instance.
+* `voxelSideTextureIDs`: ndarray of (blockIndex,side) to texture ID, for [ao-mesher](https://github.com/mikolalysenko/ao-mesher).
 
 ## License
 

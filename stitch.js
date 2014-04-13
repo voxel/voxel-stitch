@@ -30,7 +30,7 @@ function StitchPlugin(game, opts) {
   this.debug = opts.debug !== undefined ? opts.debug : false;
 
   // texture atlas width and height
-  this.atlasSize = opts.atlasSize !== undefined ? opts.atlasSize : 512; // TODO: fix wrong textures & indices with any other size
+  this.atlasSize = opts.atlasSize !== undefined ? opts.atlasSize : 512; // TODO: fix wrong textures & indices with any other size (https://github.com/deathcap/voxel-stitch/issues/4)
   this.tileSize = opts.tileSize !== undefined ? opts.tileSize : 16;
   this.tileCount = this.atlasSize / this.tileSize; // each dimension
   this.tilePad = 2;
