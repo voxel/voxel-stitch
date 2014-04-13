@@ -188,7 +188,7 @@ StitchPlugin.prototype.updateTextureSideIDs = function() {
       var blockIndex = elem[0], side = elem[1];
 
       this.voxelSideTextureIDs.set(blockIndex, side, textureIndex);
-      console.log('block',blockIndex,this.registry.getBlockName(blockIndex),'side',side,'=',textureIndex);
+      console.log('block',blockIndex,this.registry.getBlockName(blockIndex+1),'side',side,'=',textureIndex,' UV=('+sx+','+sy+')-('+ex+','+ey+') ('+w+'x'+h+')');
     }
     // TODO: texture sizes, w and h
   }
