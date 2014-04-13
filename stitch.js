@@ -30,7 +30,7 @@ function StitchPlugin(game, opts) {
   this.debug = opts.debug !== undefined ? opts.debug : false;
 
   // texture atlas width and height
-  this.atlasSize = opts.atlasSize !== undefined ? opts.atlasSize : 512; // TODO: fix wrong textures & indices with any other size (https://github.com/deathcap/voxel-stitch/issues/4)
+  this.atlasSize = opts.atlasSize !== undefined ? opts.atlasSize : 256; // TODO: fix wrong textures & indices with any other size (https://github.com/deathcap/voxel-stitch/issues/4)
   this.tileSize = opts.tileSize !== undefined ? opts.tileSize : 16;
   this.tilePad = 2;
   this.tileCount = this.atlasSize / this.tileSize / this.tilePad; // each dimension
@@ -177,7 +177,6 @@ StitchPlugin.prototype.updateTextureSideIDs = function() {
     var ex = uvBottomRight[0] * mx, ey = uvBottomRight[1] * my;
     var w = ex - sx;
     var h = ey - sy;
-
 
     // atlaspack gives UV coords, but ao-mesher wants texture index
     //var textureIndex = sy / (this.tileSize                   * this.tilePad) + (sx / (this.tileSize * this.tilePad) * this.tileSize);
