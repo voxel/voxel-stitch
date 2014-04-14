@@ -50,8 +50,9 @@ function StitchPlugin(game, opts) {
   this.countTextureID = opts.countTextureID || (1 << this.textureArraySize);
   this.countVoxelID = opts.countVoxelID || (2 << 14); // ao-mesher uses 16-bit, but top 1 bit is opaque/transparent flag TODO: flat 16-bit
 
-  // 2-dimensional array of [voxelID, side] -> textureID
+  // 2-dimensional array of [voxelID, side] -> textureID, and lg(textureSize)
   this.voxelSideTextureIDs = ndarray(new this.textureArrayType(this.countVoxelID * 6), [this.countVoxelID, 6]);
+  this.voxelSideTextureSizes = ndarray(new this.textureArrayType(this.countVoxelID * 6), [this.countVoxelID, 6]);
 
   this.enable();
 }
@@ -188,12 +189,19 @@ StitchPlugin.prototype.updateTextureSideIDs = function() {
       throw new Error('voxel-stitch maximum texture ID exceeded in '+name+' at ('+tileX+','+tileY+'), try increasing textureArraySize?');
     }
 
+    // apply texture to all blocks and sides it is for
     for (var i = 0; i < this.sidesFor[name].length; ++i) {
       var elem = this.sidesFor[name][i];
       var blockIndex = elem[0], side = elem[1];
 
       this.voxelSideTextureIDs.set(blockIndex, side, textureIndex);
-      console.log('texture',name,': block',blockIndex,this.registry.getBlockName(blockIndex+1),'side',side,'=',textureIndex,' UV=('+sx+','+sy+')-('+ex+','+ey+') ('+w+'x'+h+')');
+
+      if (w !== h) throw new Error('voxel-stitch texture '+name+' non-square dimensions '+w+' != '+h);
+      var lgW = Math.log(w / this.tilePad) / Math.log(2);
+      if (lgW !== lgW|0) throw new Error('voxel-stitch texture '+name+' non-power-of-two size '+w+', '+lgW);
+      this.voxelSideTextureSizes.set(blockIndex, side, lgW);
+
+      console.log('texture',name,': block',blockIndex,this.registry.getBlockName(blockIndex+1),'side',side,'=',textureIndex,' UV=('+sx+','+sy+')-('+ex+','+ey+') ('+w+'x'+h+') lgW='+lgW);
     }
     // TODO: texture sizes, w and h
   }

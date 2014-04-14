@@ -42,7 +42,8 @@ Events (voxel-stitch is an [EventEmitter](http://nodejs.org/api/events.html) and
 Variables:
 
 * `atlas`: The [atlaspack](https://github.com/shama/atlaspack) instance.
-* `voxelSideTextureIDs`: ndarray of (blockIndex,side) to texture ID, for [ao-mesher](https://github.com/mikolalysenko/ao-mesher).
+* `voxelSideTextureIDs`: ndarray of (blockIndex,side) to texture ID, for [ao-mesher](https://github.com/mikolalysenko/ao-mesher) or [voxel-mesher](https://github.com/deathcap/voxel-mesher).
+* `voxelSideTextureSizes`: ndarray of (blockIndex,side) to lg(texture size), for [voxel-mesher](https://github.com/deathcap/voxel-mesher).
 
 ## License
 
