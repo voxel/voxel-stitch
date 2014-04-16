@@ -22,7 +22,9 @@ module.exports.pluginInfo = {
 
 function StitchPlugin(game, opts) {
   this.registry = opts.registry || game.plugins.get('voxel-registry');
-  if (!this.registry) throw new Error('voxel-stitcher requires voxel-registry plugin');
+  if (!this.registry) throw new Error('voxel-stitch requires voxel-registry plugin');
+  this.shell = game.shell;
+  if (!this.shell) throw new Error('voxel-stitch requires game-shell'); // for gl-init
 
   opts = opts || {};
   opts.artpacks = opts.artpacks || ['https://dl.dropboxusercontent.com/u/258156216/artpacks/ProgrammerArt-v2.2.1-dev-ResourcePack-20140322.zip'];
@@ -58,6 +60,15 @@ function StitchPlugin(game, opts) {
 }
 
 inherits(StitchPlugin, EventEmitter);
+
+StitchPlugin.prototype.enable = function() {
+  this.shell.on('gl-init', this.onInit = this.stitch.bind(this));
+};
+
+StitchPlugin.prototype.disable = function() {
+  this.shell.removeListener('gl-init', this.onInit);
+};
+
 
 // expand a convenient shorthand name into a 6-element array for each side
 // based on shama/voxel-texture _expandName TODO: split into separate module?
@@ -293,11 +304,5 @@ StitchPlugin.prototype.addTextureName = function(name) {
 StitchPlugin.prototype.showAtlas = function() {
   document.body.appendChild(this.atlas.canvas);
 }
-
-StitchPlugin.prototype.enable = function() {
-};
-
-StitchPlugin.prototype.disable = function() {
-};
 
 
