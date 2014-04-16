@@ -217,7 +217,14 @@ StitchPlugin.prototype.updateTextureSideIDs = function() {
     // TODO: texture sizes, w and h
   }
 
-  this.emit('updateTexture');
+  var self = this;
+  console.log('updateTextureSideIDs complete, about to call createGLTexture');
+  this.emit('updatedSides'); // now ready: this.voxelSideTextureIDs, this.voxelSideTextureSizes
+
+  this.createGLTexture(this.shell.gl, function(err, texture) {
+    if (err) throw new Error('stitcher createGLTexture error: ' + err);
+    self.emit('updateTexture', texture);
+  });
 };
 
 // add textures
