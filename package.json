@@ -22,6 +22,7 @@
     "toarray": "0.0.1",
     "atlaspack": "^0.2.5",
     "get-pixels": "^1.0.1",
+    "save-pixels": "^0.3.0",
     "gl-texture2d": "^1.0.1",
     "touchup": "^0.1.2"
   },
@@ -32,11 +33,9 @@
   "license": "MIT",
   "devDependencies": {
     "tape": "^2.12.2",
-    "save-pixels": "^0.3.0",
     "gl-tile-map": "^0.3.0",
     "gl-now": "^1.0.1",
     "gl-shader": "^3.0.0",
-    "gl-texture2d": "^1.0.1",
     "tile-mip-map": "^0.2.1"
   }
 }
