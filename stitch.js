@@ -51,7 +51,7 @@ function StitchPlugin(game, opts) {
   this.textureArraySize = opts.textureArraySize || 16;
   this.textureArrayType = opts.textureArrayType || {8:Uint8Array, 16:Uint16Array, 32:Uint32Array}[this.textureArraySize];
   this.countTextureID = opts.countTextureID || (1 << this.textureArraySize);
-  this.countVoxelID = opts.countVoxelID || (2 << 14); // ao-mesher uses 16-bit, but top 1 bit is opaque/transparent flag TODO: flat 16-bit
+  this.countVoxelID = opts.countVoxelID || (1 << 15); // ao-mesher uses 16-bit, but top 1 bit is opaque/transparent flag TODO: flat 16-bit
 
   // 2-dimensional array of [voxelID, side] -> textureID, and lg(textureSize)
   this.voxelSideTextureIDs = ndarray(new this.textureArrayType(this.countVoxelID * 6), [this.countVoxelID, 6]);
