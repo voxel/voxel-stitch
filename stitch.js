@@ -78,8 +78,9 @@ StitchPlugin.prototype.stitch = function() {
   this.sidesFor = {};
 
   // iterate each block and each side for all textures, accumulate textureNames and sidesFor
-  for (var blockIndex = 0; blockIndex < textures.length; blockIndex += 1) {
-    var nameSideArray = expandName(textures[blockIndex], 'RTFLBK');
+  for (var i = 0; i < textures.length; i += 1) {
+    var nameSideArray = expandName(textures[i], 'RTFLBK');
+    var blockIndex = i + 1;
 
     for (var side = 0; side < 6; side += 1) {
       var name = nameSideArray[side];
@@ -146,7 +147,7 @@ StitchPlugin.prototype.updateTextureSideIDs = function() {
       if (lgW !== lgW|0) throw new Error('voxel-stitch texture '+name+' non-power-of-two size '+w+', '+lgW);
       this.voxelSideTextureSizes.set(blockIndex, side, lgW);
 
-      console.log('texture',name,': block',blockIndex,this.registry.getBlockName(blockIndex+1),'side',side,'=',textureIndex,' UV=('+sx+','+sy+')-('+ex+','+ey+') ('+w+'x'+h+') lgW='+lgW);
+      console.log('texture',name,': block',blockIndex,this.registry.getBlockName(blockIndex),'side',side,'=',textureIndex,' UV=('+sx+','+sy+')-('+ex+','+ey+') ('+w+'x'+h+') lgW='+lgW);
     }
     // TODO: texture sizes, w and h
   }
