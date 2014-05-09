@@ -2,6 +2,7 @@
 
 var createArtpacks = require('artpacks');
 var ndarray = require('ndarray');
+var ndhash = require('ndarray-hash');
 var inherits = require('inherits');
 var EventEmitter = require('events').EventEmitter;
 var toarray = require('toarray');
@@ -48,14 +49,12 @@ function StitchPlugin(game, opts) {
   this.countLoading = 0;
   this.countLoaded = 0;
 
-  this.textureArraySize = opts.textureArraySize || 16;
-  this.textureArrayType = opts.textureArrayType || {8:Uint8Array, 16:Uint16Array, 32:Uint32Array}[this.textureArraySize];
-  this.countTextureID = opts.countTextureID || (1 << this.textureArraySize);
+  this.countTextureID = opts.countTextureID || (1 << 16)
   this.countVoxelID = opts.countVoxelID || (1 << 15); // ao-mesher uses 16-bit, but top 1 bit is opaque/transparent flag TODO: flat 16-bit
 
   // 2-dimensional array of [voxelID, side] -> textureID, and lg(textureSize)
-  this.voxelSideTextureIDs = ndarray(new this.textureArrayType(this.countVoxelID * 6), [this.countVoxelID, 6]);
-  this.voxelSideTextureSizes = ndarray(new this.textureArrayType(this.countVoxelID * 6), [this.countVoxelID, 6]);
+  this.voxelSideTextureIDs = ndhash([this.countVoxelID, 6]);
+  this.voxelSideTextureSizes = ndhash([this.countVoxelID, 6]);
 
   this.enable();
 }
@@ -132,7 +131,7 @@ StitchPlugin.prototype.updateTextureSideIDs = function() {
     var textureIndex = tileY + this.tileCount * tileX;
 
     if (textureIndex >= this.countTextureID) {
-      throw new Error('voxel-stitch maximum texture ID exceeded in '+name+' at ('+tileX+','+tileY+'), try increasing textureArraySize?');
+      throw new Error('voxel-stitch maximum texture ID exceeded in '+name+' at ('+tileX+','+tileY+'), try increasing countTextureID?');
     }
 
     // apply texture to all blocks and sides it is for

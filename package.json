@@ -25,7 +25,8 @@
     "get-pixels": "^1.0.1",
     "save-pixels": "^0.3.0",
     "gl-texture2d": "^1.0.1",
-    "touchup": "^0.1.2"
+    "touchup": "^0.1.2",
+    "ndarray-hash": "0.0.0"
   },
   "scripts": {
     "start": "beefy demo.js 9977"
