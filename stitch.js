@@ -56,6 +56,9 @@ function StitchPlugin(game, opts) {
   this.voxelSideTextureIDs = ndhash([this.countVoxelID, 6]);
   this.voxelSideTextureSizes = ndhash([this.countVoxelID, 6]);
 
+  // compatibility with game.materials.artPacks from voxel-texture-shader, used by voxel-registry
+  game.materials = {artPacks: this.artpacks}
+
   this.enable();
 }
 
