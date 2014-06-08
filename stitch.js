@@ -72,6 +72,25 @@ StitchPlugin.prototype.disable = function() {
   this.shell.removeListener('gl-init', this.onInit);
 };
 
+// Get the (unpadded) UV coordinates for a texture tile
+// You can use these along with this.texture (a gl-texture2d)
+// for rendering outside of the normal voxel-shader voxels
+StitchPlugin.prototype.getTextureUV = function(name) {
+  var uvs = this.atlas.uv(); // debugging note: array or not? https://github.com/shama/atlaspack/issues/5
+
+  var uv = uvs[name].slice();
+  if (!uv) return undefined;
+
+  var d = this.tileSize / this.atlasSize;
+
+  // unpad from the 2x2 repeated tiles, so we only return one
+  uv[1][0] -= d * (this.tilePad - 1);
+  uv[2][0] -= d * (this.tilePad - 1);
+  uv[2][1] -= d * (this.tilePad - 1);
+  uv[3][1] -= d * (this.tilePad - 1);
+
+  return uv;
+};
 
 // get all block textures, assign sides, and call refresh()
 // (should only be called once)
