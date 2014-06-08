@@ -78,8 +78,10 @@ StitchPlugin.prototype.disable = function() {
 StitchPlugin.prototype.getTextureUV = function(name) {
   var uvs = this.atlas.uv(); // debugging note: array or not? https://github.com/shama/atlaspack/issues/5
 
-  var uv = uvs[name].slice();
+  var uv = uvs[name];
   if (!uv) return undefined;
+
+  uv = uv.slice();
 
   var d = this.tileSize / this.atlasSize;
 
