@@ -182,6 +182,7 @@ StitchPlugin.prototype.refresh = function() {
 StitchPlugin.prototype.createGLTexture = function(gl, cb) {
   var atlas = this.atlas;
   var showLevels = this.debug;
+  var self = this;
 
   getPixels(this.atlas.canvas.toDataURL(), function(err, array) {
     if (err) return cb(err);
@@ -201,18 +202,19 @@ StitchPlugin.prototype.createGLTexture = function(gl, cb) {
       });
     }
 
-    var tex = createTexture(gl, pyramid[0]);
-    tex.generateMipmap(); // TODO: ?
+    // TODO: multiple texture atlases, ref https://github.com/deathcap/voxel-texture-shader/issues/2
+    self.texture = createTexture(gl, pyramid[0]);
+    self.texture.generateMipmap(); // TODO: ?
 
     for (var i = 1; i < pyramid.length; ++i) {
-      tex.setPixels(pyramid[i], 0, 0, i);
+      self.texture.setPixels(pyramid[i], 0, 0, i);
     }
 
-    tex.magFilter = gl.NEAREST
-    tex.minFilter = gl.LINEAR_MIPMAP_LINEAR
-    tex.mipSamples = 4
+    self.texture.magFilter = gl.NEAREST
+    self.texture.minFilter = gl.LINEAR_MIPMAP_LINEAR
+    self.texture.mipSamples = 4
 
-    cb(null, tex);
+    cb(null, self.texture);
   });
 };
 
