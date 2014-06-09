@@ -32,6 +32,10 @@ Methods:
 * `stitch()`: Build `this.atlas` from all block `texture` properties in voxel-registry.
 * `createGLTexture(gl, cb)`: Creates a [gl-texture2d](https://github.com/gl-modules/gl-texture2d) with the GL context, calls `cb(err, tex)` when complete,
 comparable to [gl-tile-map](https://github.com/mikolalysenko/gl-tile-map).
+* `preloadTexture(name)`: Adds `name` to the list of textures to load in `stitch()`.
+Textures listed in the voxel-registry `texture` property are automatically loaded;
+you can add additional textures for custom non-voxel use here.
+* `getTextureUV(name)`: Get UV coordinates for a texture (without padding), for custom usage with `this.texture`
 
 Events (voxel-stitch is an [EventEmitter](http://nodejs.org/api/events.html) and emits the following):
 
@@ -42,6 +46,7 @@ Events (voxel-stitch is an [EventEmitter](http://nodejs.org/api/events.html) and
 Variables:
 
 * `atlas`: The [atlaspack](https://github.com/shama/atlaspack) instance.
+* `texture`: The [gl-texture2d](https://github.com/gl-modules/gl-texture2d) instance.
 * `voxelSideTextureIDs`: ndarray of (blockIndex,side) to texture ID, for [ao-mesher](https://github.com/mikolalysenko/ao-mesher) or [voxel-mesher](https://github.com/deathcap/voxel-mesher).
 * `voxelSideTextureSizes`: ndarray of (blockIndex,side) to lg(texture size), for [voxel-mesher](https://github.com/deathcap/voxel-mesher).
 
