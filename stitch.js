@@ -52,6 +52,8 @@ function StitchPlugin(game, opts) {
   this.countTextureID = opts.countTextureID || (1 << 16)
   this.countVoxelID = opts.countVoxelID || (1 << 15); // ao-mesher uses 16-bit, but top 1 bit is opaque/transparent flag TODO: flat 16-bit
 
+  this.extraTextures = [];
+
   // 2-dimensional array of [voxelID, side] -> textureID, and lg(textureSize)
   this.voxelSideTextureIDs = ndhash([this.countVoxelID, 6]);
   this.voxelSideTextureSizes = ndhash([this.countVoxelID, 6]);
@@ -97,7 +99,7 @@ StitchPlugin.prototype.getTextureUV = function(name) {
 // get all block textures, assign sides, and call refresh()
 // (should only be called once)
 StitchPlugin.prototype.stitch = function() {
-  var textures = this.registry.getBlockPropsAll('texture');
+  var textures = this.registry.getBlockPropsAll('texture').concat(this.extraTextures);
   var textureNames = [];
   this.sidesFor = {};
 
@@ -125,7 +127,7 @@ StitchPlugin.prototype.stitch = function() {
   this.textureNamesSlots = [];
   this.countLoading = textureNames.length;
   for (var j = 0; j < textureNames.length; j += 1) {
-    this.addTextureName(textureNames[j]);
+    this._addTextureName(textureNames[j]);
   }
 
   // when all textures are loaded, set texture indices from UV maps
@@ -160,7 +162,7 @@ StitchPlugin.prototype.updateTextureSideIDs = function() {
     }
 
     // apply texture to all blocks and sides it is for
-    for (var i = 0; i < this.sidesFor[name].length; ++i) {
+    for (var i = 0; i < (name in this.sidesFor ? this.sidesFor[name].length : 0); ++i) {
       var elem = this.sidesFor[name][i];
       var blockIndex = elem[0], side = elem[1];
 
@@ -193,7 +195,7 @@ StitchPlugin.prototype.refresh = function() {
   var self = this;
   this.textureNamesSlots.forEach(function(elem) {
     var textureName = elem[0], tileY = elem[1], tileX = elem[2];
-    self.addTextureName(textureName, tileY, tileX);
+    self._addTextureName(textureName, tileY, tileX);
   });
 */
 }
@@ -239,7 +241,7 @@ StitchPlugin.prototype.createGLTexture = function(gl, cb) {
   });
 };
 
-StitchPlugin.prototype.addTextureName = function(name) {
+StitchPlugin.prototype._addTextureName = function(name) {
   var self = this;
 
   this.artpacks.getTextureImage(name, function(img) {
@@ -265,8 +267,14 @@ StitchPlugin.prototype.addTextureName = function(name) {
     img2.src = touchup.repeat(img, self.tilePad, self.tilePad);
 
   }, function(err) {
-    console.log('addTextureName error in getTextureImage for '+name+': '+err);
+    console.log('voxel-stitch _addTextureName error in getTextureImage for '+name+': '+err);
   });
+};
+
+// add an additional texture to be loaded (beyond the voxel-registry block textures,
+// which are automatically included already)
+StitchPlugin.prototype.preloadTexture = function(name) {
+  this.extraTextures.push(name);
 };
 
 StitchPlugin.prototype.showAtlas = function() {
