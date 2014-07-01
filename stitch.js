@@ -32,6 +32,7 @@ function StitchPlugin(game, opts) {
   opts.artpacks = opts.artpacks || ['https://dl.dropboxusercontent.com/u/258156216/artpacks/ProgrammerArt-v2.2.1-dev-ResourcePack-20140322.zip'];
 
   this.debug = opts.debug !== undefined ? opts.debug : false;
+  this.verbose = opts.verbose !== undefined ? opts.verbose : true;
 
   // texture atlas width and height
   this.atlasSize = opts.atlasSize !== undefined ? opts.atlasSize : 2048;
@@ -173,13 +174,13 @@ StitchPlugin.prototype.updateTextureSideIDs = function() {
       if (lgW !== lgW|0) throw new Error('voxel-stitch texture '+name+' non-power-of-two size '+w+', '+lgW);
       this.voxelSideTextureSizes.set(blockIndex, side, lgW);
 
-      console.log('texture',name,': block',blockIndex,this.registry.getBlockName(blockIndex),'side',side,'=',textureIndex,' UV=('+sx+','+sy+')-('+ex+','+ey+') ('+w+'x'+h+') lgW='+lgW);
+      if (this.verbose) console.log('texture',name,': block',blockIndex,this.registry.getBlockName(blockIndex),'side',side,'=',textureIndex,' UV=('+sx+','+sy+')-('+ex+','+ey+') ('+w+'x'+h+') lgW='+lgW);
     }
     // TODO: texture sizes, w and h
   }
 
   var self = this;
-  console.log('updateTextureSideIDs complete, about to call createGLTexture');
+  if (this.verbose) console.log('updateTextureSideIDs complete, about to call createGLTexture');
   this.emit('updatedSides'); // now ready: this.voxelSideTextureIDs, this.voxelSideTextureSizes
 
   this.createGLTexture(this.shell.gl, function(err, texture) {
@@ -211,7 +212,7 @@ StitchPlugin.prototype.createGLTexture = function(gl, cb) {
     if (err) return cb(err);
 
     var pyramid = rectMipMap(array, atlas);
-    console.log('pyramid=',pyramid);
+    if (self.verbose) console.log('pyramid=',pyramid);
 
     if (showLevels) {
       // add each mip level to the page for debugging TODO: refactor with rect-mip-map demo
@@ -267,7 +268,7 @@ StitchPlugin.prototype._addTextureName = function(name) {
     img2.src = touchup.repeat(img, self.tilePad, self.tilePad);
 
   }, function(err) {
-    console.log('voxel-stitch _addTextureName error in getTextureImage for '+name+': '+err);
+    console.error('voxel-stitch _addTextureName error in getTextureImage for '+name+': '+err);
   });
 };
 
