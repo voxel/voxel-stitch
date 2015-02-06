@@ -11,7 +11,6 @@ var createAtlas = require('atlaspack');
 var expandName = require('cube-side-array');
 
 var createTexture = require('gl-texture2d');
-var getPixels = require('get-pixels');
 var rectMipMap = require('rect-mip-map');
 var touchup = require('touchup');
 
@@ -208,8 +207,12 @@ StitchPlugin.prototype.createGLTexture = function(gl, cb) {
   var showLevels = this.debug;
   var self = this;
 
-  getPixels(this.atlas.canvas.toDataURL(), function(err, array) {
-    if (err) return cb(err);
+  // get pixel data (note: similar to get-pixels, but directly from the canvas, not a URL)
+  var context = atlas.canvas.getContext('2d'); // TODO: cache?
+  var s = this.atlasSize;
+  var pixels = context.getImageData(0, 0, s, s);
+  var array = ndarray(new Uint8Array(pixels.data), [s, s, 4], [4*s, 4, 1], 0);
+
 
     var pyramid = rectMipMap(array, atlas);
     if (self.verbose) console.log('pyramid=',pyramid);
@@ -239,7 +242,6 @@ StitchPlugin.prototype.createGLTexture = function(gl, cb) {
     self.texture.mipSamples = 4
 
     cb(null, self.texture);
-  });
 };
 
 StitchPlugin.prototype._addTextureName = function(name) {

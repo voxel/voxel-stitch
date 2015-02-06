@@ -22,7 +22,6 @@
     "toarray": "0.0.1",
     "atlaspack": "^0.2.7",
     "cube-side-array": "^0.1.0",
-    "get-pixels": "^1.0.1",
     "save-pixels": "^0.3.0",
     "gl-texture2d": "^1.0.1",
     "touchup": "^0.1.2",
