@@ -214,34 +214,34 @@ StitchPlugin.prototype.createGLTexture = function(gl, cb) {
   var array = ndarray(new Uint8Array(pixels.data), [s, s, 4], [4*s, 4, 1], 0);
 
 
-    var pyramid = rectMipMap(array, atlas);
-    if (self.verbose) console.log('pyramid=',pyramid);
+  var pyramid = rectMipMap(array, atlas);
+  if (self.verbose) console.log('pyramid=',pyramid);
 
-    if (showLevels) {
-      // add each mip level to the page for debugging TODO: refactor with rect-mip-map demo
-      pyramid.forEach(function(level, i) {
-        var img = new Image();
-        img.src = savePixels(level, 'canvas').toDataURL();
-        img.style.border = '1px dotted black';
-        document.body.appendChild(document.createElement('br'));
-        document.body.appendChild(img);
-        document.body.appendChild(document.createTextNode(' level #'+i+' ('+img.width+'x'+img.height+')'));
-      });
-    }
+  if (showLevels) {
+    // add each mip level to the page for debugging TODO: refactor with rect-mip-map demo
+    pyramid.forEach(function(level, i) {
+      var img = new Image();
+      img.src = savePixels(level, 'canvas').toDataURL();
+      img.style.border = '1px dotted black';
+      document.body.appendChild(document.createElement('br'));
+      document.body.appendChild(img);
+      document.body.appendChild(document.createTextNode(' level #'+i+' ('+img.width+'x'+img.height+')'));
+    });
+  }
 
-    // TODO: multiple texture atlases, ref https://github.com/deathcap/voxel-texture-shader/issues/2
-    self.texture = createTexture(gl, pyramid[0]);
-    self.texture.generateMipmap(); // TODO: ?
+  // TODO: multiple texture atlases, ref https://github.com/deathcap/voxel-texture-shader/issues/2
+  self.texture = createTexture(gl, pyramid[0]);
+  self.texture.generateMipmap(); // TODO: ?
 
-    for (var i = 1; i < pyramid.length; ++i) {
-      self.texture.setPixels(pyramid[i], 0, 0, i);
-    }
+  for (var i = 1; i < pyramid.length; ++i) {
+    self.texture.setPixels(pyramid[i], 0, 0, i);
+  }
 
-    self.texture.magFilter = gl.NEAREST
-    self.texture.minFilter = gl.LINEAR_MIPMAP_LINEAR
-    self.texture.mipSamples = 4
+  self.texture.magFilter = gl.NEAREST
+  self.texture.minFilter = gl.LINEAR_MIPMAP_LINEAR
+  self.texture.mipSamples = 4
 
-    cb(null, self.texture);
+  cb(null, self.texture);
 };
 
 StitchPlugin.prototype._addTextureName = function(name) {
