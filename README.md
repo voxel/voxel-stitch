@@ -11,7 +11,7 @@ For an example, run `npm start` or try the [live demo](http://deathcap.github.io
 voxel-stitch uses
 [atlaspack](https://github.com/shama/atlaspack), which supports packing textures of arbitrary rectangular
 shapes onto a two-dimensional canvas. The mip maps are generated using
-[rect-tile-map](https://github.com/deathcap/rect-tile-map).
+[rect-mip-map](https://github.com/deathcap/rect-mip-map).
 
 (Before version 0.3, voxel-stitch would generate a
 5-dimensional [ndarray](https://github.com/mikolalysenko/ndarray) is in a format suitable for
