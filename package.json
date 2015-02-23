@@ -36,7 +36,7 @@
     "tape": "^2.12.2",
     "gl-tile-map": "^0.3.0",
     "gl-now": "^1.0.1",
-    "gl-shader": "^3.0.0",
+    "gl-shader": "^4.0.0",
     "tile-mip-map": "^0.2.1"
   }
 }
