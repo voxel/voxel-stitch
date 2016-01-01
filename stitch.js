@@ -25,7 +25,7 @@ function StitchPlugin(game, opts) {
   this.registry = opts.registry || game.plugins.get('voxel-registry');
   if (!this.registry) throw new Error('voxel-stitch requires voxel-registry plugin');
   this.shell = game.shell;
-  if (!this.shell) throw new Error('voxel-stitch requires game-shell'); // for gl-init
+  if (!this.shell) throw new Error('voxel-stitch requires voxel-engine-stackgl'); // for gl-init
 
   opts = opts || {};
   opts.artpacks = opts.artpacks || ['https://dl.dropboxusercontent.com/u/258156216/artpacks/ProgrammerArt-v2.2.1-dev-ResourcePack-20140322.zip'];
