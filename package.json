@@ -16,7 +16,7 @@
   ],
   "dependencies": {
     "rect-mip-map": "^0.1.0",
-    "artpacks": "^0.3.1",
+    "artpacks": "^1.0.0",
     "ndarray": "^1.0.16",
     "inherits": "^2.0.1",
     "toarray": "0.0.1",
