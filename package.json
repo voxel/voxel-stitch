@@ -24,7 +24,7 @@
     "cube-side-array": "^0.1.0",
     "save-pixels": "^0.3.0",
     "gl-texture2d": "^1.0.1",
-    "touchup": "^0.1.2",
+    "touchup": "^1.0.0",
     "ndarray-hash": "0.0.0"
   },
   "scripts": {
