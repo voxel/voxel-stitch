@@ -28,7 +28,7 @@ function StitchPlugin(game, opts) {
   if (!this.shell) throw new Error('voxel-stitch requires voxel-engine-stackgl'); // for gl-init
 
   opts = opts || {};
-  opts.artpacks = opts.artpacks || ['https://dl.dropboxusercontent.com/u/258156216/artpacks/ProgrammerArt-v2.2.1-dev-ResourcePack-20140322.zip'];
+  opts.artpacks = opts.artpacks || ['https://github.com/deathcap/ProgrammerArt/releases/download/v3.0/ProgrammerArt-v3.0-ResourcePack-MC19.zip'];
 
   this.debug = opts.debug !== undefined ? opts.debug : false;
   this.verbose = opts.verbose !== undefined ? opts.verbose : true;
